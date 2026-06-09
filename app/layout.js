@@ -1,4 +1,16 @@
+import { IBM_Plex_Mono, Space_Grotesk } from "next/font/google";
 import "./globals.css";
+
+const displayFont = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-display",
+});
+
+const monoFont = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-mono",
+});
 
 export const metadata = {
   title: "TradeOps | Daily Market Focus Engine",
@@ -14,7 +26,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body className={`${displayFont.variable} ${monoFont.variable}`}>{children}</body>
     </html>
   );
 }
