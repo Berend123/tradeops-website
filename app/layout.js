@@ -5,9 +5,9 @@ export const metadata = {
   description:
     "TradeOps scans stocks and crypto, finds the strongest developing bullish and bearish catalysts, and turns them into a daily trader watchlist.",
   icons: {
-    icon: "/favicon.png",
-    shortcut: "/favicon.png",
-    apple: "/favicon.png",
+    icon: "/favicon-transparent.png",
+    shortcut: "/favicon-transparent.png",
+    apple: "/favicon-transparent.png",
   },
 };
 

@@ -128,7 +128,7 @@ export default function HomePage() {
         <div className="hero-logo-band">
           <div className="hero-logo">
             <Image
-              src="/TradeOpsLogo.png"
+              src="/TradeOpsLogoTransparent.png"
               alt="TradeOps"
               fill
               priority
