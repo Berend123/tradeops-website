@@ -1117,6 +1117,11 @@ summary:focus-visible,
   gap: 18px;
 }
 
+.pricing-grid-single {
+  grid-template-columns: minmax(0, 420px);
+  justify-content: center;
+}
+
 .pricing-card {
   display: flex;
   flex-direction: column;
@@ -1172,6 +1177,10 @@ summary:focus-visible,
   content: "+";
   color: var(--brand-red-soft);
   margin-right: 10px;
+}
+
+.pricing-card-actions {
+  display: flex;
 }
 
 .faq-list details {

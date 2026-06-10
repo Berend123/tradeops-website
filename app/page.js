@@ -43,40 +43,18 @@ const comparisonRows = [
 
 const pricingTiers = [
   {
-    name: "Free",
-    accessLabel: "Public Access",
-    price: "Free",
-    description: "A low-friction way to see what TradeOps looks like in the wild.",
-    features: ["Occasional public examples", "Weekly sample watchlist"],
-    accent: "muted",
-  },
-  {
     name: "Pro",
-    accessLabel: "Operator Access",
+    accessLabel: "Launch Access",
     price: "$29/mo",
-    description: "The core daily product for traders who want cleaner focus before the session.",
+    description: "The launch offer for the core daily TradeOps product inside Discord.",
     features: [
-      "Daily TradeOps watchlist",
+      "Daily cross-market TradeOps watchlist",
       "Stocks long and short",
       "Crypto long and short",
-      "Thesis, trigger, and risk",
-      "Discord access",
+      "Thesis, trigger, and risk framing",
+      "Discord member access",
     ],
     accent: "primary",
-  },
-  {
-    name: "Elite",
-    accessLabel: "Elite Desk",
-    price: "$79/mo",
-    description: "A higher-touch tier for members who want more updates and more structure.",
-    features: [
-      "Intraday updates",
-      "Watchlist archive",
-      "Higher-conviction alerts",
-      "Weekly recap",
-      "Performance tracking",
-    ],
-    accent: "muted",
   },
 ];
 
@@ -256,7 +234,7 @@ function SignalLane({ title, tone, summary, rows }) {
 
 export default function HomePage() {
   const { markdown, sampleCards, stockBySide, cryptoBySide } = getTradeOpsContent();
-  const discordUrl = process.env.NEXT_PUBLIC_DISCORD_URL || "#final-cta";
+  const discordUrl = process.env.NEXT_PUBLIC_DISCORD_URL || "https://discord.gg/ZMuqZmN2qy";
   const discordLinkProps = discordUrl.startsWith("http")
     ? { href: discordUrl, target: "_blank", rel: "noreferrer" }
     : { href: discordUrl };
@@ -638,15 +616,15 @@ export default function HomePage() {
 
       <section id="pricing" className="pricing-section">
         <div className="section-heading">
-          <span className="eyebrow">Access Levels</span>
-          <h2>Choose your access level.</h2>
+          <span className="eyebrow">Launch Offer</span>
+          <h2>TradeOps Pro is $29 per month.</h2>
           <p>
-            Start with a clear ladder. Keep the offer clean. Let the daily brief and sample output do
-            the heavy lifting.
+            One clear offer for launch. Join the Discord, get the daily brief, and keep your morning
+            process focused.
           </p>
         </div>
 
-        <div className="pricing-grid">
+        <div className="pricing-grid pricing-grid-single">
           {pricingTiers.map((tier) => (
             <article
               key={tier.name}
@@ -665,6 +643,11 @@ export default function HomePage() {
                   <li key={`${tier.name}-${feature}`}>{feature}</li>
                 ))}
               </ul>
+              <div className="pricing-card-actions">
+                <a className="button button-primary" {...discordLinkProps}>
+                  Join for $29/mo
+                </a>
+              </div>
             </article>
           ))}
         </div>
