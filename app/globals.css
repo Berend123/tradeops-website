@@ -247,7 +247,7 @@ summary:focus-visible,
 .hero-logo-shell {
   position: relative;
   width: min(100%, 720px);
-  margin: 0 auto 12px;
+  margin: 0 auto 4px;
   aspect-ratio: 2 / 1;
 }
 
@@ -265,7 +265,7 @@ summary:focus-visible,
 }
 
 .hero-tag {
-  margin: 0;
+  margin: 0 0 6px;
   color: var(--brand-red-soft);
   font-size: 0.82rem;
   letter-spacing: 0.18em;
@@ -273,11 +273,13 @@ summary:focus-visible,
 }
 
 .hero h1 {
-  margin: 14px auto 18px;
-  max-width: 11ch;
-  font-size: clamp(3.5rem, 9vw, 7rem);
+  margin: 6px auto 18px;
+  max-width: none;
+  width: fit-content;
+  font-size: clamp(1.8rem, 5.8vw, 5.6rem);
   line-height: 0.92;
-  letter-spacing: -0.07em;
+  letter-spacing: -0.08em;
+  white-space: nowrap;
 }
 
 .lede {
@@ -1467,7 +1469,7 @@ summary:focus-visible,
 
   .hero h1 {
     max-width: none;
-    font-size: clamp(2.8rem, 14vw, 4.25rem);
+    font-size: clamp(1.55rem, 8.4vw, 3.1rem);
   }
 
   .hero-logo-shell {
