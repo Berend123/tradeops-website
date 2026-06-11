@@ -58,20 +58,6 @@ const pricingTiers = [
   },
 ];
 
-const footerLinks = {
-  product: [
-    { label: "Sample Watchlist", href: "#sample-watchlist" },
-    { label: "Pricing", href: "#pricing" },
-    { label: "FAQ", href: "#faq" },
-  ],
-  market: [
-    { label: "Bullish Stocks", href: "#sample-watchlist" },
-    { label: "Bearish Stocks", href: "#sample-watchlist" },
-    { label: "Bullish Crypto", href: "#sample-watchlist" },
-    { label: "Bearish Crypto", href: "#sample-watchlist" },
-  ],
-};
-
 const heroParticles = [
   { left: "8%", top: "10%", size: "10px", delay: "0s", duration: "9.5s" },
   { left: "16%", top: "34%", size: "8px", delay: "0.9s", duration: "7.2s" },
@@ -687,66 +673,6 @@ export default function HomePage() {
           </a>
         </div>
       </section>
-
-      <footer className="footer-shell">
-        <div className="footer-watermark" aria-hidden="true">
-          TRADEOPS
-        </div>
-
-        <div className="footer-brand">
-          <div className="brand-lockup">
-            <Image
-              src="/favicon-transparent.png"
-              alt="TradeOps"
-              width={72}
-              height={72}
-              className="footer-mark"
-            />
-            <div>
-              <strong>TradeOps</strong>
-              <p>Daily market focus engine for stocks and crypto</p>
-            </div>
-          </div>
-          <p>
-            TradeOps helps traders cut through market noise and focus on the few names that may
-            actually matter today.
-          </p>
-        </div>
-
-        <div className="footer-links">
-          <div>
-            <h3>Product</h3>
-            <ul>
-              {footerLinks.product.map((link) => (
-                <li key={link.label}>
-                  <a href={link.href}>{link.label}</a>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <h3>Watchlists</h3>
-            <ul>
-              {footerLinks.market.map((link) => (
-                <li key={link.label}>
-                  <a href={link.href}>{link.label}</a>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <h3>Access</h3>
-            <ul>
-              <li>
-                <a {...discordLinkProps}>Join the Discord</a>
-              </li>
-              <li>
-                <a href="#pricing">See pricing</a>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </footer>
     </main>
   );
 }
