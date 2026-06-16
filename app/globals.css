@@ -1183,6 +1183,11 @@ summary:focus-visible,
   display: flex;
 }
 
+.pricing-card-actions-stack {
+  flex-direction: column;
+  gap: 12px;
+}
+
 .faq-list details {
   background:
     linear-gradient(180deg, rgba(11, 15, 20, 0.98), rgba(6, 8, 11, 0.98));
@@ -1308,6 +1313,135 @@ summary:focus-visible,
 
 .footer-links a:hover {
   color: var(--text-primary);
+}
+
+.subpage-shell {
+  width: min(960px, 100%);
+  margin: 0 auto;
+  padding-top: 32px;
+  padding-bottom: 48px;
+}
+
+.subpage-hero,
+.subpage-panel {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 28px;
+  padding: 28px;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--border-subtle);
+  background:
+    radial-gradient(circle at top right, rgba(230, 58, 79, 0.14), transparent 24%),
+    linear-gradient(180deg, rgba(11, 15, 20, 0.96), rgba(6, 8, 11, 0.98));
+  box-shadow: var(--shadow-soft);
+}
+
+.subpage-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 28px;
+}
+
+.join-status-pill {
+  margin-top: 22px;
+  padding: 14px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-left: 2px solid rgba(230, 58, 79, 0.85);
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-secondary);
+  font-size: 0.94rem;
+}
+
+.join-status-pill-confirmed {
+  border-left-color: rgba(121, 255, 80, 0.9);
+}
+
+.join-steps {
+  display: grid;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.join-step {
+  padding: 18px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.join-step h3 {
+  margin: 0 0 8px;
+  font-size: 1.02rem;
+}
+
+.join-step p {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.join-step-index {
+  display: inline-block;
+  margin-bottom: 10px;
+  color: var(--signal-accent);
+  font-family: var(--font-mono), monospace;
+  font-size: 0.85rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.join-disclaimer {
+  max-width: 48rem;
+  color: var(--text-muted);
+  font-size: 0.92rem;
+}
+
+.capture-form {
+  display: grid;
+  gap: 12px;
+}
+
+.capture-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.field-label {
+  color: var(--text-secondary);
+  font-size: 0.92rem;
+  letter-spacing: 0.04em;
+}
+
+.field-input {
+  flex: 1 1 280px;
+  min-height: 52px;
+  padding: 0 16px;
+  border-radius: 1rem;
+  border: 1px solid var(--border-strong);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-primary);
+  font: inherit;
+}
+
+.field-input::placeholder {
+  color: var(--text-muted);
+}
+
+.capture-status {
+  margin: 0;
+  color: var(--signal-up);
+  font-size: 0.92rem;
+}
+
+.capture-status-error {
+  color: var(--signal-down);
+}
+
+.checkout-button-shell {
+  display: grid;
+  gap: 10px;
 }
 
 @keyframes particleDrift {
@@ -1545,6 +1679,17 @@ summary:focus-visible,
   .comparison-row span:last-child {
     border-left: 0;
     border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .subpage-hero,
+  .subpage-panel {
+    padding: 20px;
+  }
+
+  .subpage-actions,
+  .capture-row,
+  .pricing-card-actions-stack {
+    flex-direction: column;
   }
 
   .final-cta {
