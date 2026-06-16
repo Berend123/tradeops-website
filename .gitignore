@@ -8,3 +8,6 @@ out
 .vercel
 logs
 *.log
+public/*_preview*.png
+public/*_on_white.png
+public/*-on-white.png

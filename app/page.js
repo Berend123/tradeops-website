@@ -1,4 +1,6 @@
 import Image from "next/image";
+import { AttributionPage } from "./components/attribution-page";
+import TrackedActionLink from "./components/tracked-action-link";
 import { getTradeOpsContent } from "../lib/tradeops-data";
 
 const faqItems = [
@@ -220,10 +222,6 @@ function SignalLane({ title, tone, summary, rows }) {
 
 export default function HomePage() {
   const { markdown, sampleCards, stockBySide, cryptoBySide } = getTradeOpsContent();
-  const discordUrl = process.env.NEXT_PUBLIC_DISCORD_URL || "https://discord.gg/ZMuqZmN2qy";
-  const discordLinkProps = discordUrl.startsWith("http")
-    ? { href: discordUrl, target: "_blank", rel: "noreferrer" }
-    : { href: discordUrl };
 
   const signalMetrics = [
     { label: "Symbols Scanned", value: "8,000+", note: "Illustrative product capability" },
@@ -280,7 +278,8 @@ export default function HomePage() {
   }));
 
   return (
-    <main className="page-shell">
+    <AttributionPage pageType="home">
+      <main className="page-shell">
       <div className="background-grid" />
 
       <section className="hero">
@@ -327,9 +326,9 @@ export default function HomePage() {
             <p className="hero-note">Public site preview only. This page shows examples, not a live feed.</p>
 
             <div className="hero-actions">
-              <a className="button button-primary" {...discordLinkProps}>
+              <TrackedActionLink className="button button-primary" href="/join">
                 Join the Discord
-              </a>
+              </TrackedActionLink>
               <a className="button button-secondary" href="#sample-watchlist">
                 See Sample Watchlist
               </a>
@@ -630,9 +629,9 @@ export default function HomePage() {
                 ))}
               </ul>
               <div className="pricing-card-actions">
-                <a className="button button-primary" {...discordLinkProps}>
-                  Join for $29/mo
-                </a>
+                <TrackedActionLink className="button button-primary" href="/pricing">
+                  View Pricing Setup
+                </TrackedActionLink>
               </div>
             </article>
           ))}
@@ -665,14 +664,15 @@ export default function HomePage() {
           </p>
         </div>
         <div className="cta-actions">
-          <a className="button button-primary" {...discordLinkProps}>
+          <TrackedActionLink className="button button-primary" href="/join">
             Join the Discord
-          </a>
+          </TrackedActionLink>
           <a className="button button-secondary" href="#sample-watchlist">
             See Sample Watchlist
           </a>
         </div>
       </section>
-    </main>
+      </main>
+    </AttributionPage>
   );
 }

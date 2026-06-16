@@ -23,9 +23,22 @@ Default local URL:
 
 ## Environment Variables
 
-Current public variable expected by the site:
+Current environment variables:
 
 - `NEXT_PUBLIC_DISCORD_URL`
+- `NEXT_PUBLIC_ATTRIBUTION_ENDPOINT`
+- `NEXT_PUBLIC_CHECKOUT_ENDPOINT`
+- `TRADEOPS_CONVERSION_API_BASE_URL`
+
+`TRADEOPS_CONVERSION_API_BASE_URL` should point at the Python conversion API server that exposes:
+
+- `POST /api/attribution/event`
+- `POST /api/checkout/session`
+- `POST /api/checkout/webhook?provider=...`
+- `POST /api/discord/join`
+- `GET /api/health`
+
+The Next.js app proxies browser requests to that backend so `atid`, first-touch, last-touch, email capture, checkout handoff, and Discord join attribution all stay first-party.
 
 ## Deploy To Vercel
 
