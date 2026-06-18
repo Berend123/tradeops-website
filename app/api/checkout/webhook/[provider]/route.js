@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 import { parseLemonWebhook, verifyLemonWebhookSignature } from "../../../../../lib/lemon-squeezy";
-import { getConversionApiBaseUrl, requestConversionApi, shouldFallbackToDirect } from "../../../../../lib/conversion-api";
+import {
+  getConfiguredConversionApiBaseUrl,
+  getConversionApiBaseUrl,
+  requestConversionApi,
+  shouldFallbackToDirect,
+} from "../../../../../lib/conversion-api";
 
 
 export async function POST(request, { params }) {
@@ -8,18 +13,20 @@ export async function POST(request, { params }) {
   const rawBody = await request.text();
   const secret = request.headers.get("x-tradeops-webhook-secret") || "";
   const signature = request.headers.get("x-signature") || "";
-  const proxied = await requestConversionApi({
-    path: `/api/checkout/webhook?provider=${provider}`,
-    headers: {
-      "Content-Type": request.headers.get("content-type") || "application/json",
-      ...(secret ? { "x-tradeops-webhook-secret": secret } : {}),
-      ...(signature ? { "x-signature": signature } : {}),
-    },
-    method: "POST",
-    rawBody,
-    validatePayload: false,
-  });
-  if (!shouldFallbackToDirect(proxied)) {
+  const proxied = getConfiguredConversionApiBaseUrl()
+    ? await requestConversionApi({
+        path: `/api/checkout/webhook?provider=${provider}`,
+        headers: {
+          "Content-Type": request.headers.get("content-type") || "application/json",
+          ...(secret ? { "x-tradeops-webhook-secret": secret } : {}),
+          ...(signature ? { "x-signature": signature } : {}),
+        },
+        method: "POST",
+        rawBody,
+        validatePayload: false,
+      })
+    : null;
+  if (proxied && !shouldFallbackToDirect(proxied)) {
     return NextResponse.json(proxied.body, { status: proxied.status });
   }
 
@@ -41,7 +48,7 @@ export async function POST(request, { params }) {
         data_type: dataType,
         data_id: dataId,
         forwarded_to_conversion_api: false,
-        fallback_reason: proxied.body?.error || "conversion api unavailable",
+        fallback_reason: proxied?.body?.error || "conversion api unavailable",
       }),
     );
     return NextResponse.json(
@@ -58,7 +65,7 @@ export async function POST(request, { params }) {
       { status: 200 },
     );
   } catch (error) {
-    if (proxied.body?.error && !proxied.networkError) {
+    if (proxied?.body?.error && !proxied.networkError) {
       return NextResponse.json(proxied.body, { status: proxied.status });
     }
     return NextResponse.json(

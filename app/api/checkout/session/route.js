@@ -1,16 +1,22 @@
 import { NextResponse } from "next/server";
 
 import { createLemonCheckoutSession } from "../../../../lib/lemon-squeezy";
-import { requestConversionApi, shouldFallbackToDirect } from "../../../../lib/conversion-api";
+import {
+  getConfiguredConversionApiBaseUrl,
+  requestConversionApi,
+  shouldFallbackToDirect,
+} from "../../../../lib/conversion-api";
 
 
 export async function POST(request) {
   const payload = await request.json().catch(() => null);
-  const proxied = await requestConversionApi({
-    path: "/api/checkout/session",
-    payload,
-  });
-  if (!shouldFallbackToDirect(proxied)) {
+  const proxied = getConfiguredConversionApiBaseUrl()
+    ? await requestConversionApi({
+        path: "/api/checkout/session",
+        payload,
+      })
+    : null;
+  if (proxied && !shouldFallbackToDirect(proxied)) {
     return NextResponse.json(proxied.body, { status: proxied.status });
   }
 
@@ -24,7 +30,7 @@ export async function POST(request) {
       error: error instanceof Error ? error.message : "Checkout is not configured yet.",
       fallback_mode: "direct_lemon_squeezy",
     };
-    if (proxied.body?.error && !proxied.networkError) {
+    if (proxied?.body?.error && !proxied.networkError) {
       return NextResponse.json(proxied.body, { status: proxied.status });
     }
     return NextResponse.json(fallbackBody, { status: 400 });
