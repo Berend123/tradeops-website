@@ -1,4 +1,5 @@
 import { AttributionPage } from "../components/attribution-page";
+import DiscordActivationForm from "../components/discord-activation-form";
 import TrackedActionLink from "../components/tracked-action-link";
 import { resolveJoinPageState } from "../../lib/join-page-state.mjs";
 
@@ -85,6 +86,10 @@ export default async function JoinPage({ searchParams }) {
         </section>
 
         <section className="subpage-panel">
+          <DiscordActivationForm checkoutConfirmed={joinState.checkoutConfirmed} />
+        </section>
+
+        <section className="subpage-panel">
           <div className="section-heading">
             <span className="eyebrow">What Members Receive</span>
             <h2>Daily research, not noise.</h2>
@@ -103,10 +108,10 @@ export default async function JoinPage({ searchParams }) {
             </article>
             <article className="join-step">
               <span className="join-step-index">02</span>
-              <h3>Use the same purchase identity</h3>
+              <h3>Run activation with your email and Discord ID</h3>
               <p>
-                If you subscribed, join with the same email identity you used at checkout so support
-                can reconcile access quickly if anything needs manual review.
+                After you join the server, use the activation form above with the same email you used
+                at checkout and your Discord user ID so the premium role can be granted immediately.
               </p>
             </article>
             <article className="join-step">

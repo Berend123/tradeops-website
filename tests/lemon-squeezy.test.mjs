@@ -5,6 +5,8 @@ import crypto from "node:crypto";
 import {
   createLemonCheckoutSession,
   discoverLemonCatalog,
+  findEntitledLemonSubscription,
+  isEntitledLemonSubscription,
   parseLemonWebhook,
   verifyLemonWebhookSignature,
 } from "../lib/lemon-squeezy.js";
@@ -23,6 +25,7 @@ test("createLemonCheckoutSession builds a live Lemon Squeezy checkout without te
     assert.equal(body.data.relationships.variant.data.id, "1799365");
     assert.equal(body.data.attributes.test_mode, undefined);
     assert.equal(body.data.attributes.checkout_data.custom.plan_id, "tradeops_pro");
+    assert.equal(body.data.attributes.checkout_data.custom.discord_user_id, "1515448552623702106");
     assert.equal(body.data.attributes.product_options.redirect_url, "https://tradeops.org/join?checkout=success");
     return new Response(
       JSON.stringify({
@@ -51,6 +54,7 @@ test("createLemonCheckoutSession builds a live Lemon Squeezy checkout without te
       billing_interval: "monthly",
       email: "alpha@example.com",
       username: "alpha",
+      discord_user_id: "1515448552623702106",
       relationship_id: "u-1",
     },
     origin: "https://tradeops.org",
@@ -67,6 +71,7 @@ test("createLemonCheckoutSession builds a live Lemon Squeezy checkout without te
   assert.equal(session.checkout_url, "https://tradeopshq.lemonsqueezy.com/checkout/custom/checkout_live");
   assert.equal(session.metadata.store_id, "409011");
   assert.equal(session.metadata.variant_id, "1799365");
+  assert.equal(session.metadata.discord_user_id, "1515448552623702106");
 });
 
 
@@ -160,4 +165,89 @@ test("verifyLemonWebhookSignature accepts a valid Lemon webhook payload", () => 
   const payload = parseLemonWebhook(rawBody);
   assert.equal(payload.meta.event_name, "subscription_payment_success");
   assert.equal(payload.data.id, "invoice_123");
+});
+
+
+test("isEntitledLemonSubscription keeps cancelled subscriptions active until the end date", () => {
+  assert.equal(
+    isEntitledLemonSubscription(
+      {
+        status: "cancelled",
+        endsAt: "2099-12-31T00:00:00Z",
+      },
+      new Date("2026-06-18T00:00:00Z"),
+    ),
+    true,
+  );
+  assert.equal(
+    isEntitledLemonSubscription(
+      {
+        status: "cancelled",
+        endsAt: "2025-01-01T00:00:00Z",
+      },
+      new Date("2026-06-18T00:00:00Z"),
+    ),
+    false,
+  );
+});
+
+
+test("findEntitledLemonSubscription picks the strongest active subscription for the checkout email", async (t) => {
+  const originalFetch = global.fetch;
+  t.after(() => {
+    global.fetch = originalFetch;
+  });
+
+  global.fetch = async (url) => {
+    if (url.includes("/subscriptions?")) {
+      return new Response(
+        JSON.stringify({
+          data: [
+            {
+              id: "sub_cancelled",
+              attributes: {
+                store_id: "409011",
+                product_id: "1149930",
+                variant_id: "1799365",
+                user_email: "alpha@example.com",
+                status: "cancelled",
+                ends_at: "2099-01-01T00:00:00Z",
+                updated_at: "2026-06-17T00:00:00Z",
+              },
+            },
+            {
+              id: "sub_active",
+              attributes: {
+                store_id: "409011",
+                product_id: "1149930",
+                variant_id: "1799365",
+                user_email: "alpha@example.com",
+                status: "active",
+                updated_at: "2026-06-18T00:00:00Z",
+              },
+            },
+          ],
+        }),
+        {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    }
+    throw new Error(`Unexpected Lemon Squeezy request: ${url}`);
+  };
+
+  const subscription = await findEntitledLemonSubscription({
+    email: "alpha@example.com",
+    env: {
+      LEMON_SQUEEZY_API_KEY: "ls_key",
+      LEMON_SQUEEZY_STORE_ID: "409011",
+      LEMON_SQUEEZY_PRODUCT_ID: "1149930",
+      LEMON_SQUEEZY_VARIANT_ID: "1799365",
+    },
+    now: new Date("2026-06-18T00:00:00Z"),
+  });
+
+  assert.equal(subscription.id, "sub_active");
+  assert.equal(subscription.status, "active");
 });

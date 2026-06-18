@@ -1397,6 +1397,29 @@ summary:focus-visible,
   font-size: 0.92rem;
 }
 
+.activation-panel {
+  display: grid;
+  gap: 20px;
+}
+
+.activation-form {
+  gap: 16px;
+}
+
+.field-shell {
+  display: grid;
+  gap: 8px;
+}
+
+.field-help {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.activation-actions {
+  margin-top: 4px;
+}
+
 .capture-form {
   display: grid;
   gap: 12px;
