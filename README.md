@@ -29,6 +29,12 @@ Current environment variables:
 - `NEXT_PUBLIC_ATTRIBUTION_ENDPOINT`
 - `NEXT_PUBLIC_CHECKOUT_ENDPOINT`
 - `TRADEOPS_CONVERSION_API_BASE_URL`
+- `LEMON_SQUEEZY_API_KEY`
+- `LEMON_SQUEEZY_STORE_ID`
+- `LEMON_SQUEEZY_PRODUCT_ID`
+- `LEMON_SQUEEZY_VARIANT_ID`
+- `LEMON_SQUEEZY_WEBHOOK_SECRET`
+- `LEMON_SQUEEZY_TEST_MODE`
 
 `TRADEOPS_CONVERSION_API_BASE_URL` should point at the Python conversion API server that exposes:
 
@@ -39,6 +45,8 @@ Current environment variables:
 - `GET /api/health`
 
 The Next.js app proxies browser requests to that backend so `atid`, first-touch, last-touch, email capture, checkout handoff, and Discord join attribution all stay first-party.
+
+If the conversion API is unavailable, the checkout session route can fall back to creating a Lemon Squeezy hosted checkout directly from the website runtime. The webhook route can also verify and acknowledge Lemon Squeezy webhooks directly so live payments are not blocked by a missing backend host.
 
 ## Deploy To Vercel
 

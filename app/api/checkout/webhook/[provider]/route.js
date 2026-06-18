@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { getConversionApiBaseUrl } from "../../../../../lib/conversion-api";
+import { parseLemonWebhook, verifyLemonWebhookSignature } from "../../../../../lib/lemon-squeezy";
+import { getConversionApiBaseUrl, requestConversionApi, shouldFallbackToDirect } from "../../../../../lib/conversion-api";
 
 
 export async function POST(request, { params }) {
@@ -7,29 +8,66 @@ export async function POST(request, { params }) {
   const rawBody = await request.text();
   const secret = request.headers.get("x-tradeops-webhook-secret") || "";
   const signature = request.headers.get("x-signature") || "";
+  const proxied = await requestConversionApi({
+    path: `/api/checkout/webhook?provider=${provider}`,
+    headers: {
+      "Content-Type": request.headers.get("content-type") || "application/json",
+      ...(secret ? { "x-tradeops-webhook-secret": secret } : {}),
+      ...(signature ? { "x-signature": signature } : {}),
+    },
+    method: "POST",
+    rawBody,
+    validatePayload: false,
+  });
+  if (!shouldFallbackToDirect(proxied)) {
+    return NextResponse.json(proxied.body, { status: proxied.status });
+  }
+
   try {
-    const response = await fetch(`${getConversionApiBaseUrl()}/api/checkout/webhook?provider=${provider}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": request.headers.get("content-type") || "application/json",
-        ...(secret ? { "x-tradeops-webhook-secret": secret } : {}),
-        ...(signature ? { "x-signature": signature } : {}),
+    if (provider !== "lemon_squeezy") {
+      throw new Error(`Direct fallback is only supported for Lemon Squeezy webhooks. Received provider '${provider}'.`);
+    }
+    verifyLemonWebhookSignature({ rawBody, signature });
+    const payload = parseLemonWebhook(rawBody);
+    const eventName = String(payload?.meta?.event_name || payload?.event_name || payload?.type || "").trim();
+    const dataType = String(payload?.data?.type || "").trim();
+    const dataId = String(payload?.data?.id || "").trim();
+    console.log(
+      JSON.stringify({
+        level: "info",
+        source: "tradeops_direct_lemon_webhook",
+        provider,
+        event_name: eventName,
+        data_type: dataType,
+        data_id: dataId,
+        forwarded_to_conversion_api: false,
+        fallback_reason: proxied.body?.error || "conversion api unavailable",
+      }),
+    );
+    return NextResponse.json(
+      {
+        ok: true,
+        direct: true,
+        provider,
+        received: true,
+        event_name: eventName,
+        data_type: dataType,
+        data_id: dataId,
+        note: "Accepted directly because the conversion API backend is unavailable.",
       },
-      body: rawBody,
-      cache: "no-store",
-    });
-    const body = await response.json().catch(() => ({
-      ok: false,
-      error: `Conversion API returned status ${response.status}.`,
-    }));
-    return NextResponse.json(body, { status: response.status });
+      { status: 200 },
+    );
   } catch (error) {
+    if (proxied.body?.error && !proxied.networkError) {
+      return NextResponse.json(proxied.body, { status: proxied.status });
+    }
     return NextResponse.json(
       {
         ok: false,
-        error: error instanceof Error ? error.message : "Conversion API is unavailable.",
+        error: error instanceof Error ? error.message : `Direct ${getConversionApiBaseUrl()} webhook handling failed.`,
+        fallback_mode: "direct_lemon_squeezy",
       },
-      { status: 502 },
+      { status: 400 },
     );
   }
 }
