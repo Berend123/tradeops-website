@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { activateDiscordProAccess } from "../../../../lib/discord-entitlements";
+import { DISCORD_SESSION_COOKIE, parseDiscordSession } from "../../../../lib/discord-oauth";
 
 
 export async function POST(request) {
@@ -16,9 +17,10 @@ export async function POST(request) {
   }
 
   try {
+    const session = parseDiscordSession(request.cookies.get(DISCORD_SESSION_COOKIE)?.value || "");
     const activation = await activateDiscordProAccess({
-      email: payload.email,
-      discordUserId: payload.discord_user_id,
+      email: payload.email || session?.email || "",
+      discordUserId: payload.discord_user_id || session?.userId || "",
     });
     return NextResponse.json(activation, { status: 200 });
   } catch (error) {

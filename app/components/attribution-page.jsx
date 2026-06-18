@@ -90,6 +90,7 @@ export function AttributionPage({ pageType = "landing", pageViewMetadata = {}, c
     amount = 29,
     billingInterval = "monthly",
     email = "",
+    discordUserId = "",
     metadata = {},
   } = {}) => {
     if (!state) {
@@ -107,6 +108,7 @@ export function AttributionPage({ pageType = "landing", pageViewMetadata = {}, c
       amount,
       billing_interval: billingInterval,
       email,
+      discord_user_id: discordUserId,
       metadata,
     });
     return response.session;

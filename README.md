@@ -38,6 +38,8 @@ Current environment variables:
 - `TRADEOPS_DISCORD_BOT_TOKEN`
 - `TRADEOPS_DISCORD_TOKEN_FILE`
 - `TRADEOPS_DISCORD_GUILD_ID`
+- `TRADEOPS_DISCORD_CLIENT_ID`
+- `TRADEOPS_DISCORD_OAUTH_REDIRECT_URI`
 - `TRADEOPS_DISCORD_PRO_ROLE_ID`
 - `TRADEOPS_DISCORD_PREMIUM_ROLE_NAME`
 - `TRADEOPS_DISCORD_PREMIUM_CHANNELS`
@@ -54,7 +56,15 @@ The Next.js app proxies browser requests to that backend so `atid`, first-touch,
 
 If the conversion API is unavailable, the checkout session route can fall back to creating a Lemon Squeezy hosted checkout directly from the website runtime. The webhook route can also verify and acknowledge Lemon Squeezy webhooks directly so live payments are not blocked by a missing backend host.
 
-The join page also exposes a direct Discord activation flow at `POST /api/discord/activate`. That route verifies an active Lemon Squeezy subscription by checkout email, ensures a bot-manageable premium role exists, syncs that role onto the premium channels, and grants it to the supplied Discord member.
+Discord identity can now be linked through:
+
+- `GET /api/discord/oauth/start`
+- `POST /api/discord/oauth/finalize`
+- `/discord/oauth/complete`
+
+That flow stores the Discord user in a first-party cookie, joins the user to the TradeOps guild with `guilds.join`, and lets checkout/webhooks carry `discord_user_id` automatically.
+
+The join page also exposes a direct Discord activation flow at `POST /api/discord/activate`. That route verifies an active Lemon Squeezy subscription by checkout email, ensures a bot-manageable premium role exists, syncs that role onto the premium channels, and grants it to the connected Discord member. The direct Lemon webhook fallback now attempts to grant `Pro Access` automatically on successful payment events when checkout metadata includes `discord_user_id`.
 
 ## Deploy To Vercel
 

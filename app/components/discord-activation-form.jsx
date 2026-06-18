@@ -40,9 +40,15 @@ function buildStatus(body) {
 }
 
 
-export default function DiscordActivationForm({ checkoutConfirmed = false }) {
-  const [email, setEmail] = useState("");
-  const [discordUserId, setDiscordUserId] = useState("");
+export default function DiscordActivationForm({
+  checkoutConfirmed = false,
+  connectedDiscordUserId = "",
+  connectedDiscordLabel = "",
+  connectedEmail = "",
+  connectHref = "/api/discord/oauth/start?return_to=%2Fjoin",
+}) {
+  const [email, setEmail] = useState(connectedEmail);
+  const [discordUserId, setDiscordUserId] = useState(connectedDiscordUserId);
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState(DEFAULT_STATUS);
 
@@ -52,10 +58,23 @@ export default function DiscordActivationForm({ checkoutConfirmed = false }) {
         <span className="eyebrow">{checkoutConfirmed ? "Activate Pro" : "Already Paid?"}</span>
         <h2>Unlock Discord Pro access now.</h2>
         <p>
-          Enter the checkout email tied to your Lemon Squeezy subscription and your Discord user ID.
-          If the subscription is active, the site will grant the premium role immediately.
+          {connectedDiscordUserId
+            ? "Your Discord account is connected. Enter the checkout email tied to your Lemon Squeezy subscription and the site will grant the premium role immediately."
+            : "Connect Discord first for the clean path. If you already paid, you can still enter the checkout email and Discord user ID manually to grant the premium role immediately."}
         </p>
       </div>
+
+      {connectedDiscordUserId ? (
+        <div className="join-status-pill join-status-pill-confirmed">
+          Connected Discord account: {connectedDiscordLabel || connectedDiscordUserId}
+        </div>
+      ) : (
+        <div className="subpage-actions activation-actions">
+          <a className="button button-secondary" href={connectHref}>
+            Connect Discord
+          </a>
+        </div>
+      )}
 
       <form
         className="capture-form activation-form"
@@ -100,21 +119,23 @@ export default function DiscordActivationForm({ checkoutConfirmed = false }) {
           />
         </label>
 
-        <label className="field-shell">
-          <span className="field-label">Discord user ID</span>
-          <input
-            className="field-input"
-            type="text"
-            inputMode="numeric"
-            placeholder="1515448552623702106"
-            value={discordUserId}
-            onChange={(event) => setDiscordUserId(event.target.value)}
-            required
-          />
-          <span className="field-help">
-            Use the numeric Discord ID. A pasted profile link or mention also works if it contains the ID.
-          </span>
-        </label>
+        {connectedDiscordUserId ? null : (
+          <label className="field-shell">
+            <span className="field-label">Discord user ID</span>
+            <input
+              className="field-input"
+              type="text"
+              inputMode="numeric"
+              placeholder="1515448552623702106"
+              value={discordUserId}
+              onChange={(event) => setDiscordUserId(event.target.value)}
+              required
+            />
+            <span className="field-help">
+              Use the numeric Discord ID. A pasted profile link or mention also works if it contains the ID.
+            </span>
+          </label>
+        )}
 
         <div className="subpage-actions activation-actions">
           <button type="submit" className="button button-primary" disabled={busy}>

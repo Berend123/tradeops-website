@@ -1,7 +1,10 @@
+import { cookies } from "next/headers";
+
 import { AttributionPage } from "../components/attribution-page";
 import CheckoutButton from "../components/checkout-button";
 import EmailCaptureForm from "../components/email-capture-form";
 import TrackedActionLink from "../components/tracked-action-link";
+import { DISCORD_SESSION_COOKIE, parseDiscordSession } from "../../lib/discord-oauth";
 
 
 export const metadata = {
@@ -10,8 +13,17 @@ export const metadata = {
 };
 
 
-export default function PricingPage() {
+function buildDiscordConnectHref() {
+  return "/api/discord/oauth/start?return_to=%2Fpricing";
+}
+
+
+export default async function PricingPage() {
+  const cookieStore = await cookies();
+  const discordSession = parseDiscordSession(cookieStore.get(DISCORD_SESSION_COOKIE)?.value || "");
   const discordUrl = process.env.NEXT_PUBLIC_DISCORD_URL || "https://discord.gg/ZMuqZmN2qy";
+  const connectHref = buildDiscordConnectHref();
+  const connectedDiscordLabel = discordSession?.globalName || discordSession?.username || discordSession?.userId || "";
   return (
     <AttributionPage pageType="pricing">
       <main className="page-shell subpage-shell">
@@ -41,10 +53,33 @@ export default function PricingPage() {
                 <li>Discord member access</li>
                 <li>Tracked attribution into checkout</li>
               </ul>
+              {discordSession ? (
+                <div className="join-status-pill join-status-pill-confirmed">
+                  Discord connected: {connectedDiscordLabel}. Checkout can provision access automatically.
+                </div>
+              ) : (
+                <div className="join-status-pill">
+                  Connect Discord before checkout so the Lemon webhook can grant Pro access automatically.
+                </div>
+              )}
               <div className="pricing-card-actions pricing-card-actions-stack">
-                <CheckoutButton className="button button-primary" amount={29} planId="tradeops_pro" planName="TradeOps Pro">
+                <CheckoutButton
+                  className="button button-primary"
+                  amount={29}
+                  planId="tradeops_pro"
+                  planName="TradeOps Pro"
+                  discordUserId={discordSession?.userId || ""}
+                >
                   Start Checkout
                 </CheckoutButton>
+                <TrackedActionLink
+                  className="button button-secondary"
+                  href={connectHref}
+                  eventType="discord_button_click"
+                  metadata={{ destination: "discord_oauth_connect", page_type: "pricing" }}
+                >
+                  {discordSession ? "Reconnect Discord" : "Connect Discord First"}
+                </TrackedActionLink>
                 <TrackedActionLink
                   className="button button-secondary"
                   href={discordUrl}

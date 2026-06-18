@@ -1,6 +1,9 @@
+import { cookies } from "next/headers";
+
 import { AttributionPage } from "../components/attribution-page";
 import DiscordActivationForm from "../components/discord-activation-form";
 import TrackedActionLink from "../components/tracked-action-link";
+import { DISCORD_SESSION_COOKIE, parseDiscordSession } from "../../lib/discord-oauth";
 import { resolveJoinPageState } from "../../lib/join-page-state.mjs";
 
 export const metadata = {
@@ -34,12 +37,39 @@ function getSupportEmail() {
   return process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "support@tradeops.org";
 }
 
+
+function buildDiscordConnectHref({
+  returnTo = "/join",
+  searchParams = {},
+}) {
+  const params = new URLSearchParams();
+  params.set("return_to", returnTo);
+  for (const [key, value] of Object.entries(searchParams || {})) {
+    if (key === "discord") {
+      continue;
+    }
+    const normalized = String(value || "").trim();
+    if (!normalized) {
+      continue;
+    }
+    params.set(key, normalized);
+  }
+  return `/api/discord/oauth/start?${params.toString()}`;
+}
+
 export default async function JoinPage({ searchParams }) {
   const resolvedSearchParams = (await searchParams) || {};
+  const cookieStore = await cookies();
+  const discordSession = parseDiscordSession(cookieStore.get(DISCORD_SESSION_COOKIE)?.value || "");
   const joinState = resolveJoinPageState(resolvedSearchParams);
   const joinCopy = buildJoinCopy(joinState);
   const supportEmail = getSupportEmail();
   const discordUrl = process.env.NEXT_PUBLIC_DISCORD_URL || "https://discord.gg/ZMuqZmN2qy";
+  const connectHref = buildDiscordConnectHref({
+    returnTo: "/join",
+    searchParams: resolvedSearchParams,
+  });
+  const connectedDiscordLabel = discordSession?.globalName || discordSession?.username || discordSession?.userId || "";
 
   return (
     <AttributionPage
@@ -65,8 +95,38 @@ export default async function JoinPage({ searchParams }) {
           </div>
 
           <div className="subpage-actions">
+            {discordSession ? (
+              <TrackedActionLink
+                className="button button-primary"
+                href={discordUrl}
+                eventType="discord_button_click"
+                metadata={{
+                  destination: "discord_join",
+                  page_type: "join",
+                  checkout_confirmed: joinState.checkoutConfirmed,
+                  discord_connected: true,
+                }}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Open the TradeOps Discord
+              </TrackedActionLink>
+            ) : (
+              <TrackedActionLink
+                className="button button-primary"
+                href={connectHref}
+                eventType="discord_button_click"
+                metadata={{
+                  destination: "discord_oauth_connect",
+                  page_type: "join",
+                  checkout_confirmed: joinState.checkoutConfirmed,
+                }}
+              >
+                Connect Discord
+              </TrackedActionLink>
+            )}
             <TrackedActionLink
-              className="button button-primary"
+              className="button button-secondary"
               href={discordUrl}
               eventType="discord_button_click"
               metadata={{
@@ -77,7 +137,7 @@ export default async function JoinPage({ searchParams }) {
               target="_blank"
               rel="noreferrer"
             >
-              Join the TradeOps Discord
+              Use Invite Link
             </TrackedActionLink>
             <a className="button button-secondary" href={`mailto:${supportEmail}`}>
               Contact Support
@@ -86,7 +146,13 @@ export default async function JoinPage({ searchParams }) {
         </section>
 
         <section className="subpage-panel">
-          <DiscordActivationForm checkoutConfirmed={joinState.checkoutConfirmed} />
+          <DiscordActivationForm
+            checkoutConfirmed={joinState.checkoutConfirmed}
+            connectedDiscordUserId={discordSession?.userId || ""}
+            connectedDiscordLabel={connectedDiscordLabel}
+            connectedEmail={discordSession?.email || ""}
+            connectHref={connectHref}
+          />
         </section>
 
         <section className="subpage-panel">
@@ -103,24 +169,24 @@ export default async function JoinPage({ searchParams }) {
           <div className="join-steps">
             <article className="join-step">
               <span className="join-step-index">01</span>
-              <h3>Open the Discord invite</h3>
-              <p>Use the button above to enter the TradeOps server with the current invite link.</p>
+              <h3>Connect your Discord account</h3>
+              <p>Use the connect button above so TradeOps can join your Discord account to the server directly.</p>
             </article>
             <article className="join-step">
               <span className="join-step-index">02</span>
-              <h3>Run activation with your email and Discord ID</h3>
+              <h3>Checkout with Discord already linked</h3>
               <p>
-                After you join the server, use the activation form above with the same email you used
-                at checkout and your Discord user ID so the premium role can be granted immediately.
+                If Discord is connected before payment, the checkout metadata carries your Discord user
+                ID so the Lemon webhook can grant Pro access automatically after payment.
               </p>
             </article>
             <article className="join-step">
               <span className="join-step-index">03</span>
-              <h3>Escalate access issues fast</h3>
+              <h3>Use manual activation only as fallback</h3>
               <p>
-                If Discord access or member permissions do not look right, email{" "}
-                <a href={`mailto:${supportEmail}`}>{supportEmail}</a> and include your checkout
-                receipt details.
+                If you paid before linking Discord or the emails do not line up, use the activation form
+                above. If anything still looks wrong, email <a href={`mailto:${supportEmail}`}>{supportEmail}</a>{" "}
+                and include your checkout receipt details.
               </p>
             </article>
           </div>

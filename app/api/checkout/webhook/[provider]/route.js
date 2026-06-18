@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { syncDiscordProAccessFromLemonWebhook } from "../../../../../lib/discord-entitlements";
 import { parseLemonWebhook, verifyLemonWebhookSignature } from "../../../../../lib/lemon-squeezy";
 import {
   getConfiguredConversionApiBaseUrl,
@@ -39,6 +40,21 @@ export async function POST(request, { params }) {
     const eventName = String(payload?.meta?.event_name || payload?.event_name || payload?.type || "").trim();
     const dataType = String(payload?.data?.type || "").trim();
     const dataId = String(payload?.data?.id || "").trim();
+    let entitlement = {
+      attempted: false,
+      reason: "not_processed",
+    };
+    try {
+      entitlement = await syncDiscordProAccessFromLemonWebhook({
+        payload,
+      });
+    } catch (entitlementError) {
+      entitlement = {
+        attempted: true,
+        ok: false,
+        error: entitlementError instanceof Error ? entitlementError.message : "Discord entitlement sync failed.",
+      };
+    }
     console.log(
       JSON.stringify({
         level: "info",
@@ -49,6 +65,7 @@ export async function POST(request, { params }) {
         data_id: dataId,
         forwarded_to_conversion_api: false,
         fallback_reason: proxied?.body?.error || "conversion api unavailable",
+        entitlement,
       }),
     );
     return NextResponse.json(
@@ -60,6 +77,7 @@ export async function POST(request, { params }) {
         event_name: eventName,
         data_type: dataType,
         data_id: dataId,
+        entitlement,
         note: "Accepted directly because the conversion API backend is unavailable.",
       },
       { status: 200 },

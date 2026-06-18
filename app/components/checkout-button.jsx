@@ -10,6 +10,7 @@ export default function CheckoutButton({
   planName = "TradeOps Pro",
   amount = 29,
   billingInterval = "monthly",
+  discordUserId = "",
   children,
 }) {
   const { emitEvent, startCheckout } = useAttribution();
@@ -29,7 +30,8 @@ export default function CheckoutButton({
             page: window.location.pathname,
             planId,
             planName,
-            metadata: { billing_interval: billingInterval, amount },
+            discordUserId,
+            metadata: { billing_interval: billingInterval, amount, discord_connected: Boolean(discordUserId) },
           });
           try {
             const session = await startCheckout({
@@ -37,6 +39,7 @@ export default function CheckoutButton({
               planName,
               amount,
               billingInterval,
+              discordUserId,
               metadata: { website_page: window.location.pathname },
             });
             window.location.assign(session.checkout_url);

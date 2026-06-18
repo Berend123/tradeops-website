@@ -8,7 +8,7 @@ test("join route file exists with the primary Discord CTA", () => {
   assert.equal(existsSync(routePath), true);
 
   const source = readFileSync(routePath, "utf8");
-  assert.match(source, /Join the TradeOps Discord/);
+  assert.match(source, /Connect Discord/);
   assert.match(source, /DiscordActivationForm/);
   assert.match(source, /pageType="join"/);
 });
