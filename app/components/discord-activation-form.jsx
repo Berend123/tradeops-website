@@ -22,7 +22,7 @@ function buildStatus(body) {
   if (body.ok) {
     return {
       tone: "success",
-      message: body.already_active ? "Pro access is already active on your Discord account." : "Pro access is now active on your Discord account.",
+      message: body.already_active ? "TradeOps Pro was already active on this Discord account." : "TradeOps Pro is now claimed on this Discord account.",
       details:
         body.premium_role?.name
           ? `Role: ${body.premium_role.name}${body.subscription?.status ? ` | Subscription: ${body.subscription.status}` : ""}`
@@ -41,26 +41,29 @@ function buildStatus(body) {
 
 
 export default function DiscordActivationForm({
+  id = "",
   checkoutConfirmed = false,
   connectedDiscordUserId = "",
   connectedDiscordLabel = "",
-  connectedEmail = "",
   connectHref = "/api/discord/oauth/start?return_to=%2Fjoin",
+  redirectTo = "/dashboard",
+  hasActivePro = false,
 }) {
-  const [email, setEmail] = useState(connectedEmail);
-  const [discordUserId, setDiscordUserId] = useState(connectedDiscordUserId);
+  const [email, setEmail] = useState("");
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState(DEFAULT_STATUS);
 
   return (
-    <div className="activation-panel">
+    <div className="activation-panel" id={id || undefined}>
       <div className="section-heading">
-        <span className="eyebrow">{checkoutConfirmed ? "Activate Pro" : "Already Paid?"}</span>
-        <h2>Unlock Discord Pro access now.</h2>
+        <span className="eyebrow">{checkoutConfirmed ? "Claim Pro Access" : "Already Paid?"}</span>
+        <h2>Claim website and Discord Pro access.</h2>
         <p>
-          {connectedDiscordUserId
-            ? "Your Discord account is connected. Enter the checkout email tied to your Lemon Squeezy subscription and the site will grant the premium role immediately."
-            : "Connect Discord first for the clean path. If you already paid, you can still enter the checkout email and Discord user ID manually to grant the premium role immediately."}
+          {hasActivePro
+            ? "Your TradeOps Pro access is already active. You can open the dashboard or Discord directly."
+            : connectedDiscordUserId
+              ? "Your Discord account is connected. Enter the checkout email tied to your Lemon Squeezy subscription and the site will claim both dashboard and Discord Pro access."
+              : "Connect Discord first. The claim form becomes available after the OAuth step completes."}
         </p>
       </div>
 
@@ -76,6 +79,15 @@ export default function DiscordActivationForm({
         </div>
       )}
 
+      {hasActivePro ? (
+        <div className="subpage-actions activation-actions">
+          <a className="button button-primary" href={redirectTo}>
+            Open dashboard
+          </a>
+        </div>
+      ) : null}
+
+      {!connectedDiscordUserId || hasActivePro ? null : (
       <form
         className="capture-form activation-form"
         onSubmit={async (event) => {
@@ -89,11 +101,15 @@ export default function DiscordActivationForm({
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
                 email,
-                discord_user_id: discordUserId,
+                redirect_to: redirectTo,
               }),
             });
             const body = await response.json().catch(() => ({}));
-            setStatus(buildStatus(body));
+            const nextStatus = buildStatus(body);
+            setStatus(nextStatus);
+            if (response.ok && body?.ok && body?.redirect_to) {
+              window.location.href = body.redirect_to;
+            }
           } catch (error) {
             setStatus({
               tone: "error",
@@ -104,7 +120,7 @@ export default function DiscordActivationForm({
             setBusy(false);
           }
         }}
-      >
+        >
         <label className="field-shell">
           <span className="field-label">Checkout email</span>
           <input
@@ -119,27 +135,9 @@ export default function DiscordActivationForm({
           />
         </label>
 
-        {connectedDiscordUserId ? null : (
-          <label className="field-shell">
-            <span className="field-label">Discord user ID</span>
-            <input
-              className="field-input"
-              type="text"
-              inputMode="numeric"
-              placeholder="1515448552623702106"
-              value={discordUserId}
-              onChange={(event) => setDiscordUserId(event.target.value)}
-              required
-            />
-            <span className="field-help">
-              Use the numeric Discord ID. A pasted profile link or mention also works if it contains the ID.
-            </span>
-          </label>
-        )}
-
         <div className="subpage-actions activation-actions">
           <button type="submit" className="button button-primary" disabled={busy}>
-            {busy ? "Activating..." : "Activate Pro Access"}
+            {busy ? "Claiming..." : "Claim Pro Access"}
           </button>
         </div>
 
@@ -150,6 +148,7 @@ export default function DiscordActivationForm({
           </p>
         ) : null}
       </form>
+      )}
     </div>
   );
 }

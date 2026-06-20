@@ -24,6 +24,118 @@
   --radius-pill: 999px;
 }
 
+.member-auth-form {
+  max-width: 560px;
+}
+
+.member-auth-status {
+  margin-top: 16px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(126, 247, 69, 0.2);
+  background: rgba(126, 247, 69, 0.08);
+}
+
+.member-auth-status-error {
+  border-color: rgba(255, 94, 58, 0.22);
+  background: rgba(255, 94, 58, 0.08);
+}
+
+.inline-link {
+  color: #9cff5a;
+  text-decoration: underline;
+}
+
+.member-kicker-grid,
+.member-grid {
+  display: grid;
+  gap: 18px;
+}
+
+.member-kicker-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.member-grid-two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.member-grid-three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.member-kicker-card,
+.member-card {
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    linear-gradient(180deg, rgba(18, 24, 29, 0.92), rgba(11, 15, 19, 0.96)),
+    rgba(255, 255, 255, 0.03);
+  padding: 22px 24px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18);
+}
+
+.member-card h2,
+.member-card h3,
+.member-kicker-card h2 {
+  margin: 8px 0 10px;
+}
+
+.member-card p,
+.member-kicker-card p {
+  color: rgba(230, 236, 240, 0.82);
+}
+
+.member-card-meta {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.92rem;
+  color: rgba(156, 255, 90, 0.86);
+}
+
+.member-bullet-list {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 10px;
+}
+
+.member-history-list {
+  display: grid;
+  gap: 20px;
+}
+
+.member-history-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.member-history-mode {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.82rem;
+  color: #9cff5a;
+  background: rgba(126, 247, 69, 0.1);
+  border: 1px solid rgba(126, 247, 69, 0.18);
+}
+
+@media (max-width: 900px) {
+  .member-kicker-grid,
+  .member-grid-two,
+  .member-grid-three {
+    grid-template-columns: 1fr;
+  }
+
+  .member-history-header {
+    flex-direction: column;
+  }
+}
+
 * {
   box-sizing: border-box;
 }

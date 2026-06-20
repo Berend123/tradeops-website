@@ -8,6 +8,19 @@ import {
   parseDiscordOAuthStateCookie,
   serializeDiscordSession,
 } from "../../../../../lib/discord-oauth";
+import {
+  applyMemberSessionCookie,
+  createMemberSessionForUserId,
+  getCurrentMemberSession,
+  sanitizeInternalRedirectPath,
+} from "../../../../../lib/member-auth";
+import { resolveMemberSessionFromDiscordOAuth } from "../../../../../lib/member-subscriptions";
+
+
+function resolveJoinRedirectTarget(returnTo) {
+  const parsed = new URL(returnTo || "/join", "https://tradeops.org");
+  return sanitizeInternalRedirectPath(parsed.searchParams.get("redirect") || "/dashboard");
+}
 
 
 export async function POST(request) {
@@ -64,10 +77,32 @@ export async function POST(request) {
       avatarUrl: profile.avatarUrl,
       connectedAt: new Date().toISOString(),
     };
-
-    const redirectTo = buildDiscordOAuthRedirectTarget(storedState.returnTo, {
-      discord: "connected",
+    const memberSession = await getCurrentMemberSession().catch(() => null);
+    const accountLink = await resolveMemberSessionFromDiscordOAuth({
+      discordUserId: profile.userId,
+      discordEmail: profile.email,
+      discordUsername: profile.username,
+      discordGlobalName: profile.globalName,
+      currentUserId: memberSession?.userId || "",
     });
+
+    const joinRedirectTarget = resolveJoinRedirectTarget(storedState.returnTo);
+    const parsedReturnTo = new URL(storedState.returnTo || "/join", "https://tradeops.org");
+    let redirectTo = storedState.returnTo;
+    if (accountLink?.linked && accountLink.access?.hasActivePro) {
+      redirectTo =
+        parsedReturnTo.pathname === "/join"
+          ? joinRedirectTarget
+          : buildDiscordOAuthRedirectTarget(storedState.returnTo, {
+              discord: "connected",
+            });
+    } else {
+      redirectTo = buildDiscordOAuthRedirectTarget("/join", {
+        discord: "connected",
+        claim: "required",
+        redirect: joinRedirectTarget,
+      });
+    }
 
     const response = NextResponse.json(
       {
@@ -75,9 +110,14 @@ export async function POST(request) {
         redirect_to: redirectTo,
         session,
         guild_join: guildJoin,
+        account_link: accountLink,
       },
       { status: 200 },
     );
+    if (accountLink?.linked && accountLink?.user?.id) {
+      const refreshedSession = await createMemberSessionForUserId(accountLink.user.id);
+      applyMemberSessionCookie(response, refreshedSession.sessionToken, request.url);
+    }
     response.cookies.set(DISCORD_SESSION_COOKIE, serializeDiscordSession(session), {
       httpOnly: true,
       secure: useSecureCookies,

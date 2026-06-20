@@ -28,6 +28,8 @@ Current environment variables:
 - `NEXT_PUBLIC_DISCORD_URL`
 - `NEXT_PUBLIC_ATTRIBUTION_ENDPOINT`
 - `NEXT_PUBLIC_CHECKOUT_ENDPOINT`
+- `DATABASE_URL`
+- `AUTH_SECRET`
 - `TRADEOPS_CONVERSION_API_BASE_URL`
 - `LEMON_SQUEEZY_API_KEY`
 - `LEMON_SQUEEZY_STORE_ID`
@@ -43,6 +45,12 @@ Current environment variables:
 - `TRADEOPS_DISCORD_PRO_ROLE_ID`
 - `TRADEOPS_DISCORD_PREMIUM_ROLE_NAME`
 - `TRADEOPS_DISCORD_PREMIUM_CHANNELS`
+
+Optional legacy email-login settings:
+
+- `AUTH_FROM_EMAIL`
+- `RESEND_API_KEY`
+- `AUTH_ALLOW_PREVIEW_LINKS`
 
 `TRADEOPS_CONVERSION_API_BASE_URL` should point at the Python conversion API server that exposes:
 
@@ -65,6 +73,26 @@ Discord identity can now be linked through:
 That flow stores the Discord user in a first-party cookie, joins the user to the TradeOps guild with `guilds.join`, and lets checkout/webhooks carry `discord_user_id` automatically.
 
 The join page also exposes a direct Discord activation flow at `POST /api/discord/activate`. That route verifies an active Lemon Squeezy subscription by checkout email, ensures a bot-manageable premium role exists, syncs that role onto the premium channels, and grants it to the connected Discord member. The direct Lemon webhook fallback now attempts to grant `Pro Access` automatically on successful payment events when checkout metadata includes `discord_user_id`.
+
+Member routes now include:
+
+- `/login`
+- `/dashboard`
+- `/dashboard/history`
+- `/account`
+
+The current member portal is **Discord-first**:
+
+- members sign in with Discord
+- `/join` is the claim/bind page after checkout
+- the website dashboard and Discord Pro role are unlocked from the same shared entitlement
+
+The dashboard reads published member-facing snapshots from Neon Postgres. Use the bootstrap and backfill scripts before the first production launch:
+
+```powershell
+npm run db:bootstrap
+npm run members:backfill
+```
 
 ## Deploy To Vercel
 

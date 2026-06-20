@@ -1,6 +1,9 @@
+import { cookies } from "next/headers";
 import Image from "next/image";
 import { AttributionPage } from "./components/attribution-page";
+import CheckoutButton from "./components/checkout-button";
 import TrackedActionLink from "./components/tracked-action-link";
+import { DISCORD_SESSION_COOKIE, parseDiscordSession } from "../lib/discord-oauth";
 import { getTradeOpsContent } from "../lib/tradeops-data";
 
 const faqItems = [
@@ -17,7 +20,7 @@ const faqItems = [
   {
     question: "What do members actually receive?",
     answer:
-      "Members receive a daily Discord briefing with market regime context, named catalysts, a best long, a best short, a priority board, market confirmation notes, and clear confirmation and invalidation language.",
+      "Members receive a Morning Edge dashboard plus Discord Pro access with market regime context, named catalysts, a best long, a best short, a priority board, market confirmation notes, and clear confirmation and invalidation language.",
   },
   {
     question: "Does it cover crypto as well as stocks?",
@@ -48,9 +51,9 @@ const pricingTiers = [
     name: "Pro",
     accessLabel: "Launch Access",
     price: "$29/mo",
-    description: "The launch offer for the core TradeOps Morning Edge briefing inside Discord.",
+    description: "The launch offer for the core TradeOps Morning Edge dashboard and Discord Pro access.",
     features: [
-      "Daily Morning Edge briefing in Discord",
+      "Hosted Morning Edge dashboard",
       "Best long and best short",
       "Priority 1 / 2 / 3 board",
       "Market confirmation and avoid notes",
@@ -168,7 +171,16 @@ function SignalLane({ title, tone, summary, rows, pillLabel }) {
   );
 }
 
-export default function HomePage() {
+function buildDiscordConnectHref() {
+  return "/api/discord/oauth/start?return_to=%2F&redirect=%2Fdashboard";
+}
+
+export default async function HomePage() {
+  const cookieStore = await cookies();
+  const discordSession = parseDiscordSession(cookieStore.get(DISCORD_SESSION_COOKIE)?.value || "");
+  const discordUrl = process.env.NEXT_PUBLIC_DISCORD_URL || "https://discord.gg/ZMuqZmN2qy";
+  const connectHref = buildDiscordConnectHref();
+  const connectedDiscordLabel = discordSession?.globalName || discordSession?.username || discordSession?.userId || "";
   const { markdown, noiseStream, sampleCards, signalPanels, structureSummary } = getTradeOpsContent();
 
   const signalMetrics = [
@@ -238,8 +250,11 @@ export default function HomePage() {
             <p className="hero-note">Public site preview only. This page shows an illustrative briefing, not a live feed.</p>
 
             <div className="hero-actions">
-              <TrackedActionLink className="button button-primary" href="/pricing">
+              <a className="button button-primary" href="#pricing">
                 Start TradeOps Pro
+              </a>
+              <TrackedActionLink className="button button-secondary" href="/login">
+                Member Login
               </TrackedActionLink>
               <a className="button button-secondary" href="#sample-brief">
                 See Sample Brief
@@ -541,9 +556,42 @@ export default function HomePage() {
                   <li key={`${tier.name}-${feature}`}>{feature}</li>
                 ))}
               </ul>
-              <div className="pricing-card-actions">
-                <TrackedActionLink className="button button-primary" href="/pricing">
-                  Start TradeOps Pro
+              {discordSession ? (
+                <div className="join-status-pill join-status-pill-confirmed">
+                  Discord connected: {connectedDiscordLabel}. Checkout can link the dashboard and Discord Pro access faster.
+                </div>
+              ) : (
+                <div className="join-status-pill">
+                  Connecting Discord before checkout is recommended, but not required. You can still claim access on the join page after payment.
+                </div>
+              )}
+              <div className="pricing-card-actions pricing-card-actions-stack">
+                <CheckoutButton
+                  className="button button-primary"
+                  amount={29}
+                  planId="tradeops_pro"
+                  planName="TradeOps Pro"
+                  discordUserId={discordSession?.userId || ""}
+                >
+                  Start Checkout
+                </CheckoutButton>
+                <TrackedActionLink
+                  className="button button-secondary"
+                  href={connectHref}
+                  eventType="discord_button_click"
+                  metadata={{ destination: "discord_oauth_connect", page_type: "home" }}
+                >
+                  {discordSession ? "Reconnect Discord" : "Connect Discord Now"}
+                </TrackedActionLink>
+                <TrackedActionLink
+                  className="button button-secondary"
+                  href={discordUrl}
+                  eventType="discord_button_click"
+                  metadata={{ destination: "discord_join", page_type: "home" }}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Join the Discord First
                 </TrackedActionLink>
               </div>
             </article>
@@ -577,8 +625,11 @@ export default function HomePage() {
           </p>
         </div>
         <div className="cta-actions">
-          <TrackedActionLink className="button button-primary" href="/pricing">
+          <a className="button button-primary" href="#pricing">
             Start TradeOps Pro
+          </a>
+          <TrackedActionLink className="button button-secondary" href="/login">
+            Member Login
           </TrackedActionLink>
           <a className="button button-secondary" href="#sample-brief">
             See Sample Brief

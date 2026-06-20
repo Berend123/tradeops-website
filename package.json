@@ -7,9 +7,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test": "node --test"
+    "test": "node --test",
+    "db:bootstrap": "node --env-file=.env.local --env-file=../.env.local ./scripts/bootstrap-member-db.mjs",
+    "members:backfill": "node --env-file=.env.local --env-file=../.env.local ./scripts/backfill-pro-members.mjs"
   },
   "dependencies": {
+    "@neondatabase/serverless": "^1.1.0",
     "next": "^15.3.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"

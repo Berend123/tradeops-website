@@ -5,10 +5,12 @@ import DiscordActivationForm from "../components/discord-activation-form";
 import TrackedActionLink from "../components/tracked-action-link";
 import { DISCORD_SESSION_COOKIE, parseDiscordSession } from "../../lib/discord-oauth";
 import { resolveJoinPageState } from "../../lib/join-page-state.mjs";
+import { getCurrentMemberSession, sanitizeInternalRedirectPath } from "../../lib/member-auth";
+import { getMemberAccessStateForUser } from "../../lib/member-subscriptions";
 
 export const metadata = {
   title: "TradeOps | Join",
-  description: "Post-purchase Discord access for TradeOps Pro members and Morning Edge onboarding.",
+  description: "Post-purchase claim flow for the TradeOps dashboard and Discord Pro access.",
 };
 
 function buildJoinCopy(joinState) {
@@ -17,7 +19,7 @@ function buildJoinCopy(joinState) {
       eyebrow: "Access Confirmed",
       title: "Your TradeOps subscription is active.",
       summary:
-        "Use the Discord button below to enter the TradeOps server and complete member onboarding. Morning Edge briefings, catalyst analysis, risk framing, priority boards, and community access are delivered there.",
+        "Use the buttons below to open the TradeOps dashboard and connect Discord. Morning Edge briefings, research context, risk framing, priority boards, and community access now span both the website dashboard and the Discord server.",
       status:
         "Checkout confirmation metadata was detected on this page, so we can safely show the membership-active state.",
     };
@@ -27,7 +29,7 @@ function buildJoinCopy(joinState) {
     eyebrow: "Discord Access",
     title: "Use this page to enter the TradeOps Discord.",
     summary:
-      "TradeOps is a Discord-delivered market intelligence membership. Members receive Morning Edge briefings with market weather, a trade read, best long and short, priority tiers, catalyst analysis, risk framing, and community access. If you already subscribed, use the button below to access Discord. If you arrived here from X or another tracked link, your attribution data will be preserved.",
+      "TradeOps is a market-intelligence membership with a Morning Edge website dashboard and Discord delivery/community layer. Members receive market weather, a trade read, best long and short, priority tiers, catalyst analysis, risk framing, and archive access. If you already subscribed, use the buttons below to access the dashboard and connect Discord.",
     status:
       "This page does not see confirmed checkout metadata yet, so it shows the access instructions without claiming payment is complete.",
   };
@@ -35,6 +37,37 @@ function buildJoinCopy(joinState) {
 
 function getSupportEmail() {
   return process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "support@tradeops.org";
+}
+
+
+function buildJoinNotice({
+  hasDiscordSession,
+  hasActivePro,
+  requiresClaim,
+  redirectTo,
+}) {
+  if (hasActivePro) {
+    return {
+      tone: "confirmed",
+      text: "Discord is linked and your TradeOps Pro access is active.",
+    };
+  }
+  if (requiresClaim && hasDiscordSession) {
+    return {
+      tone: "",
+      text: `Discord is connected. Finish the claim below using the checkout email tied to your subscription, then you will be sent to ${redirectTo}.`,
+    };
+  }
+  if (hasDiscordSession) {
+    return {
+      tone: "",
+      text: "Discord is connected. If your subscription used a different email, finish the claim below.",
+    };
+  }
+  return {
+    tone: "",
+    text: "Connect Discord first, then claim access with the checkout email tied to your Lemon Squeezy subscription.",
+  };
 }
 
 
@@ -61,15 +94,27 @@ export default async function JoinPage({ searchParams }) {
   const resolvedSearchParams = (await searchParams) || {};
   const cookieStore = await cookies();
   const discordSession = parseDiscordSession(cookieStore.get(DISCORD_SESSION_COOKIE)?.value || "");
+  const memberSession = await getCurrentMemberSession().catch(() => null);
+  const access = memberSession?.userId ? await getMemberAccessStateForUser(memberSession.userId).catch(() => null) : null;
   const joinState = resolveJoinPageState(resolvedSearchParams);
   const joinCopy = buildJoinCopy(joinState);
   const supportEmail = getSupportEmail();
   const discordUrl = process.env.NEXT_PUBLIC_DISCORD_URL || "https://discord.gg/ZMuqZmN2qy";
+  const redirectTo = sanitizeInternalRedirectPath(resolvedSearchParams.redirect || "/dashboard");
   const connectHref = buildDiscordConnectHref({
     returnTo: "/join",
-    searchParams: resolvedSearchParams,
+    searchParams: {
+      ...resolvedSearchParams,
+      redirect: redirectTo,
+    },
   });
   const connectedDiscordLabel = discordSession?.globalName || discordSession?.username || discordSession?.userId || "";
+  const joinNotice = buildJoinNotice({
+    hasDiscordSession: Boolean(discordSession?.userId),
+    hasActivePro: Boolean(access?.hasActivePro),
+    requiresClaim: String(resolvedSearchParams.claim || "").trim().toLowerCase() === "required",
+    redirectTo,
+  });
 
   return (
     <AttributionPage
@@ -89,15 +134,28 @@ export default async function JoinPage({ searchParams }) {
           </div>
 
           <div
-            className={`join-status-pill${joinState.checkoutConfirmed ? " join-status-pill-confirmed" : ""}`}
+            className={`join-status-pill${joinState.checkoutConfirmed || joinNotice.tone === "confirmed" ? " join-status-pill-confirmed" : ""}`}
           >
-            {joinCopy.status}
+            {joinNotice.text || joinCopy.status}
           </div>
 
           <div className="subpage-actions">
+            {access?.hasActivePro ? (
+              <a className="button button-primary" href="/dashboard">
+                Open dashboard
+              </a>
+            ) : discordSession ? (
+              <a className="button button-primary" href="#claim-access">
+                Claim dashboard access
+              </a>
+            ) : (
+              <a className="button button-primary" href={connectHref}>
+                Continue with Discord
+              </a>
+            )}
             {discordSession ? (
               <TrackedActionLink
-                className="button button-primary"
+                className="button button-secondary"
                 href={discordUrl}
                 eventType="discord_button_click"
                 metadata={{
@@ -113,7 +171,7 @@ export default async function JoinPage({ searchParams }) {
               </TrackedActionLink>
             ) : (
               <TrackedActionLink
-                className="button button-primary"
+                className="button button-secondary"
                 href={connectHref}
                 eventType="discord_button_click"
                 metadata={{
@@ -147,11 +205,13 @@ export default async function JoinPage({ searchParams }) {
 
         <section className="subpage-panel">
           <DiscordActivationForm
+            id="claim-access"
             checkoutConfirmed={joinState.checkoutConfirmed}
             connectedDiscordUserId={discordSession?.userId || ""}
             connectedDiscordLabel={connectedDiscordLabel}
-            connectedEmail={discordSession?.email || ""}
             connectHref={connectHref}
+            redirectTo={redirectTo}
+            hasActivePro={Boolean(access?.hasActivePro)}
           />
         </section>
 
@@ -160,33 +220,35 @@ export default async function JoinPage({ searchParams }) {
             <span className="eyebrow">What Members Receive</span>
             <h2>Morning briefings, not noise.</h2>
             <p>
-              TradeOps focuses on actionable stock and crypto intelligence delivered inside Discord:
-              Morning Edge briefings, catalyst framing, scenario thinking, risk context, priority
-              boards, and a community built around structured market prep.
+              TradeOps focuses on actionable stock and crypto intelligence across the hosted Morning
+              Edge dashboard and the Discord Pro community: catalyst framing, scenario thinking, risk
+              context, priority boards, and structured market prep.
             </p>
           </div>
 
           <div className="join-steps">
             <article className="join-step">
               <span className="join-step-index">01</span>
-              <h3>Connect your Discord account</h3>
-              <p>Use the connect button above so TradeOps can join your Discord account to the server directly.</p>
+              <h3>Start with Discord login</h3>
+              <p>Use Discord as the TradeOps member login so the website dashboard and Discord Pro access stay tied to one identity.</p>
             </article>
             <article className="join-step">
               <span className="join-step-index">02</span>
-              <h3>Checkout with Discord already linked</h3>
-              <p>
-                If Discord is connected before payment, the checkout metadata carries your Discord user
-                ID so the Lemon webhook can grant Pro access automatically after payment.
-              </p>
+              <h3>Let TradeOps join the server</h3>
+              <p>Use the connect button above so TradeOps can attach your Discord account to the guild and sync the Pro role automatically.</p>
             </article>
             <article className="join-step">
               <span className="join-step-index">03</span>
-              <h3>Use manual activation only as fallback</h3>
+              <h3>Claim access with your checkout email if needed</h3>
               <p>
-                If you paid before linking Discord or the emails do not line up, use the activation form
-                above. If anything still looks wrong, email <a href={`mailto:${supportEmail}`}>{supportEmail}</a>{" "}
-                and include your checkout receipt details.
+                If you checked out with the same email Discord returned, access can link automatically. If not, use the claim form above with the checkout email tied to your Lemon Squeezy purchase.
+              </p>
+            </article>
+            <article className="join-step">
+              <span className="join-step-index">04</span>
+              <h3>Open the dashboard after the claim succeeds</h3>
+              <p>
+                Once the claim completes, the site starts your member session and sends you straight into the Morning Edge dashboard. If anything still looks wrong, email <a href={`mailto:${supportEmail}`}>{supportEmail}</a>.
               </p>
             </article>
           </div>

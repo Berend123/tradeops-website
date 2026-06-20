@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { syncDiscordProAccessFromLemonWebhook } from "../../../../../lib/discord-entitlements";
 import { parseLemonWebhook, verifyLemonWebhookSignature } from "../../../../../lib/lemon-squeezy";
+import { syncMembershipFromLemonWebhook } from "../../../../../lib/member-subscriptions";
 import {
   getConfiguredConversionApiBaseUrl,
   getConversionApiBaseUrl,
@@ -40,6 +41,21 @@ export async function POST(request, { params }) {
     const eventName = String(payload?.meta?.event_name || payload?.event_name || payload?.type || "").trim();
     const dataType = String(payload?.data?.type || "").trim();
     const dataId = String(payload?.data?.id || "").trim();
+    let membership = {
+      attempted: false,
+      reason: "not_processed",
+    };
+    try {
+      membership = await syncMembershipFromLemonWebhook({
+        payload,
+      });
+    } catch (membershipError) {
+      membership = {
+        attempted: true,
+        ok: false,
+        error: membershipError instanceof Error ? membershipError.message : "Membership sync failed.",
+      };
+    }
     let entitlement = {
       attempted: false,
       reason: "not_processed",
@@ -65,6 +81,7 @@ export async function POST(request, { params }) {
         data_id: dataId,
         forwarded_to_conversion_api: false,
         fallback_reason: proxied?.body?.error || "conversion api unavailable",
+        membership,
         entitlement,
       }),
     );
@@ -77,6 +94,7 @@ export async function POST(request, { params }) {
         event_name: eventName,
         data_type: dataType,
         data_id: dataId,
+        membership,
         entitlement,
         note: "Accepted directly because the conversion API backend is unavailable.",
       },

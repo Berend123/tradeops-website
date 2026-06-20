@@ -5,6 +5,7 @@ out
 .env
 .env.production
 .env.development
+.env.vercel.production
 .vercel
 logs
 *.log

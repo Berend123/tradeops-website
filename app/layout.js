@@ -15,7 +15,7 @@ const monoFont = IBM_Plex_Mono({
 export const metadata = {
   title: "TradeOps | Morning Edge Market Briefing",
   description:
-    "TradeOps turns stock and crypto catalysts into a Morning Edge Discord briefing with market weather, best long and short, priority tiers, and risk framing.",
+    "TradeOps turns stock and crypto catalysts into a Morning Edge dashboard and Discord Pro briefing with market weather, best long and short, priority tiers, and risk framing.",
   icons: {
     icon: "/favicon-transparent.png",
     shortcut: "/favicon-transparent.png",
