@@ -616,6 +616,12 @@ summary:focus-visible,
     linear-gradient(180deg, rgba(13, 17, 23, 0.96), rgba(6, 8, 11, 0.99));
 }
 
+.signal-lane-neutral {
+  background:
+    radial-gradient(circle at top right, rgba(52, 152, 219, 0.14), transparent 26%),
+    linear-gradient(180deg, rgba(13, 17, 23, 0.96), rgba(6, 8, 11, 0.99));
+}
+
 .lane-head {
   display: flex;
   justify-content: space-between;
@@ -652,6 +658,10 @@ summary:focus-visible,
 
 .lane-pill-down {
   color: var(--signal-down);
+}
+
+.lane-pill-neutral {
+  color: #7cc9ff;
 }
 
 .lane-list {
@@ -995,6 +1005,10 @@ summary:focus-visible,
 
 .watchlist-card-down .watchlist-chip {
   color: var(--signal-down);
+}
+
+.watchlist-card-neutral .watchlist-chip {
+  color: #7cc9ff;
 }
 
 .ticker-row {

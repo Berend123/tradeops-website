@@ -9,7 +9,7 @@ import { DISCORD_SESSION_COOKIE, parseDiscordSession } from "../../lib/discord-o
 
 export const metadata = {
   title: "TradeOps | Pricing",
-  description: "TradeOps pricing and checkout handoff with preserved attribution metadata.",
+  description: "TradeOps pricing for the Morning Edge Discord briefing and Pro access.",
 };
 
 
@@ -32,8 +32,8 @@ export default async function PricingPage() {
             <span className="eyebrow">Pricing</span>
             <h1>TradeOps Pro is $29 per month.</h1>
             <p>
-              The checkout handoff carries `atid`, first-touch, last-touch, source, campaign, and
-              relationship identifiers so paid conversions can be tied back to X campaigns and users.
+              TradeOps Pro gives you the Morning Edge briefing in Discord: market weather, a trade
+              read, best long, best short, a priority board, market confirmation, and risk framing.
             </p>
           </div>
 
@@ -44,14 +44,15 @@ export default async function PricingPage() {
                 <div>
                   <span className="eyebrow">TradeOps Pro</span>
                   <h3>$29/mo</h3>
-                  <p>Cross-market watchlists, thesis, trigger, risk framing, and Discord access.</p>
+                  <p>Daily Morning Edge briefings, priority tiers, and Pro Discord access.</p>
                 </div>
               </div>
               <ul>
-                <li>Daily stock and crypto watchlist</li>
-                <li>Long and short focus</li>
+                <li>Daily Morning Edge briefing in Discord</li>
+                <li>Best long and best short</li>
+                <li>Priority 1 / 2 / 3 board</li>
+                <li>Market confirmation and avoid notes</li>
                 <li>Discord member access</li>
-                <li>Tracked attribution into checkout</li>
               </ul>
               {discordSession ? (
                 <div className="join-status-pill join-status-pill-confirmed">
@@ -97,11 +98,11 @@ export default async function PricingPage() {
 
         <section className="subpage-panel">
           <div className="section-heading">
-            <span className="eyebrow">Warm Lead Capture</span>
-            <h2>Capture email before checkout if needed.</h2>
+            <span className="eyebrow">Need More Time?</span>
+            <h2>Leave your email before checkout if needed.</h2>
             <p>
-              If checkout is not configured yet, the funnel can still capture intent on the pricing
-              page and resolve that visitor later when Discord or payments are connected.
+              If you are not ready to check out yet, you can still capture your place and come back
+              after you decide the Morning Edge format fits your process.
             </p>
           </div>
           <EmailCaptureForm formName="pricing_page_capture" />

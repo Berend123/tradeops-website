@@ -13,9 +13,9 @@ const monoFont = IBM_Plex_Mono({
 });
 
 export const metadata = {
-  title: "TradeOps | Daily Market Focus Engine",
+  title: "TradeOps | Morning Edge Market Briefing",
   description:
-    "TradeOps scans stocks and crypto, finds the strongest developing bullish and bearish catalysts, and turns them into a daily trader watchlist.",
+    "TradeOps turns stock and crypto catalysts into a Morning Edge Discord briefing with market weather, best long and short, priority tiers, and risk framing.",
   icons: {
     icon: "/favicon-transparent.png",
     shortcut: "/favicon-transparent.png",

@@ -8,7 +8,7 @@ import { resolveJoinPageState } from "../../lib/join-page-state.mjs";
 
 export const metadata = {
   title: "TradeOps | Join",
-  description: "Post-purchase Discord access and attribution-safe onboarding for TradeOps members.",
+  description: "Post-purchase Discord access for TradeOps Pro members and Morning Edge onboarding.",
 };
 
 function buildJoinCopy(joinState) {
@@ -17,7 +17,7 @@ function buildJoinCopy(joinState) {
       eyebrow: "Access Confirmed",
       title: "Your TradeOps subscription is active.",
       summary:
-        "Use the Discord button below to enter the TradeOps server and complete member onboarding. Daily stock and crypto watchlists, catalyst analysis, risk framing, and community access are delivered there.",
+        "Use the Discord button below to enter the TradeOps server and complete member onboarding. Morning Edge briefings, catalyst analysis, risk framing, priority boards, and community access are delivered there.",
       status:
         "Checkout confirmation metadata was detected on this page, so we can safely show the membership-active state.",
     };
@@ -27,7 +27,7 @@ function buildJoinCopy(joinState) {
     eyebrow: "Discord Access",
     title: "Use this page to enter the TradeOps Discord.",
     summary:
-      "TradeOps is a Discord-delivered market intelligence membership. Members receive daily stock and crypto watchlists, catalyst analysis, risk framing, and community access. If you already subscribed, use the button below to access Discord. If you arrived here from X or another tracked link, your attribution data will be preserved.",
+      "TradeOps is a Discord-delivered market intelligence membership. Members receive Morning Edge briefings with market weather, a trade read, best long and short, priority tiers, catalyst analysis, risk framing, and community access. If you already subscribed, use the button below to access Discord. If you arrived here from X or another tracked link, your attribution data will be preserved.",
     status:
       "This page does not see confirmed checkout metadata yet, so it shows the access instructions without claiming payment is complete.",
   };
@@ -158,11 +158,11 @@ export default async function JoinPage({ searchParams }) {
         <section className="subpage-panel">
           <div className="section-heading">
             <span className="eyebrow">What Members Receive</span>
-            <h2>Daily research, not noise.</h2>
+            <h2>Morning briefings, not noise.</h2>
             <p>
               TradeOps focuses on actionable stock and crypto intelligence delivered inside Discord:
-              daily watchlists, catalyst framing, scenario thinking, risk context, and a community
-              built around structured market prep.
+              Morning Edge briefings, catalyst framing, scenario thinking, risk context, priority
+              boards, and a community built around structured market prep.
             </p>
           </div>
 

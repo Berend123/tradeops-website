@@ -7,22 +7,22 @@ const faqItems = [
   {
     question: "Who is TradeOps built for?",
     answer:
-      "TradeOps is for active traders who want a faster morning process and a cleaner watchlist across stocks and crypto.",
+      "TradeOps is for active traders who want a faster morning process and a cleaner premarket briefing across stocks and crypto.",
   },
   {
     question: "Is this a buy or sell signal service?",
     answer:
-      "No. TradeOps is a market focus product. It gives members names, context, triggers, and risk framing so they can decide what deserves attention.",
+      "No. TradeOps is a Morning Edge briefing product. It gives members market weather, a trade read, best long and short, priority tiers, and risk framing so they can decide what deserves attention.",
   },
   {
     question: "What do members actually receive?",
     answer:
-      "Members receive a daily cross-market watchlist with bullish stocks, bearish stocks, bullish crypto, bearish crypto, and plain-English thesis, trigger, and risk framing.",
+      "Members receive a daily Discord briefing with market regime context, named catalysts, a best long, a best short, a priority board, market confirmation notes, and clear confirmation and invalidation language.",
   },
   {
     question: "Does it cover crypto as well as stocks?",
     answer:
-      "Yes. TradeOps is built as a cross-market product so traders can see both stock and crypto focus names in one place.",
+      "Yes. TradeOps is built as a cross-market product so traders can see both stock and crypto context in one morning operating brief.",
   },
 ];
 
@@ -36,11 +36,11 @@ const audience = [
 ];
 
 const comparisonRows = [
-  ["Dumps headlines", "Filters for relevance"],
-  ["Shows everything", "Shows what matters"],
-  ["Requires manual sorting", "Gives ranked focus"],
-  ["Mostly reactive", "Highlights developing catalysts"],
-  ["No trade framing", "Includes thesis, trigger, and risk"],
+  ["Dumps headlines", "Starts with market weather and a trade read"],
+  ["Flat watchlist", "Best long, best short, and priority tiers"],
+  ["Requires manual sorting", "Ranks focus before the open"],
+  ["Mostly reactive", "Highlights named catalysts"],
+  ["No hierarchy", "Includes confirmation, invalidation, and avoid notes"],
 ];
 
 const pricingTiers = [
@@ -48,12 +48,12 @@ const pricingTiers = [
     name: "Pro",
     accessLabel: "Launch Access",
     price: "$29/mo",
-    description: "The launch offer for the core daily TradeOps product inside Discord.",
+    description: "The launch offer for the core TradeOps Morning Edge briefing inside Discord.",
     features: [
-      "Daily cross-market TradeOps watchlist",
-      "Stocks long and short",
-      "Crypto long and short",
-      "Thesis, trigger, and risk framing",
+      "Daily Morning Edge briefing in Discord",
+      "Best long and best short",
+      "Priority 1 / 2 / 3 board",
+      "Market confirmation and avoid notes",
       "Discord member access",
     ],
     accent: "primary",
@@ -71,75 +71,24 @@ const heroParticles = [
   { left: "88%", top: "16%", size: "7px", delay: "1.1s", duration: "10.3s" },
 ];
 
-function buildLaneRows(items, fallbackHeadline) {
-  const rows = items.slice(0, 3).map((item) => ({
-    ticker: item.ticker,
-    conviction: item.conviction,
-    headline: item.headlines?.[0]?.title || fallbackHeadline,
-  }));
-
-  if (rows.length) {
-    return rows;
-  }
-
-  return [
-    {
-      ticker: "STBY",
-      conviction: "Standby",
-      headline: fallbackHeadline,
-    },
-  ];
-}
-
-function flattenRowsForNoise(sampleCards) {
-  const rows = sampleCards.flatMap((card) =>
-    card.rows.map((row, index) => ({
-      ticker: row.ticker,
-      conviction: row.conviction,
-      headline: row.headline,
-      stream: card.title,
-      tag: index % 3 === 0 ? "Breaking" : index % 3 === 1 ? "Flow" : "Alert",
-    })),
-  );
-
-  if (rows.length) {
-    return rows;
-  }
-
-  return [
-    {
-      ticker: "NVDA",
-      conviction: "High",
-      headline: "Headline pressure floods the tape before the open.",
-      stream: "Noise Feed",
-      tag: "Breaking",
-    },
-    {
-      ticker: "BTC",
-      conviction: "Medium",
-      headline: "Cross-market volatility creates conflicting attention.",
-      stream: "Noise Feed",
-      tag: "Flow",
-    },
-  ];
-}
-
-function getToneFromTitle(title) {
-  return title.toLowerCase().includes("bearish") ? "down" : "up";
-}
-
 function getLineTone(line) {
-  if (!line.trim()) {
+  const trimmed = line.trim();
+  if (!trimmed) {
     return "brief-line-empty";
   }
-  if (line.startsWith("#")) {
+  if (trimmed.startsWith("#")) {
     return "brief-line-heading";
   }
-  if (line.includes("Conviction:")) {
+  if (
+    /^(Catalyst:|Conviction:|Risk:|Confirmation:|Invalidation:|Priority \d:|Stocks:|Crypto:)/.test(trimmed)
+  ) {
     return "brief-line-signal";
   }
-  if (line.trim().startsWith("-")) {
+  if (trimmed.startsWith("-")) {
     return "brief-line-note";
+  }
+  if (!line.trim()) {
+    return "brief-line-empty";
   }
   return "";
 }
@@ -161,14 +110,13 @@ function BriefLines({ markdown }) {
   );
 }
 
-function WatchlistCard({ title, description, rows }) {
-  const tone = getToneFromTitle(title);
+function WatchlistCard({ title, description, rows, tone = "up", chip = "" }) {
   const visibleRows = rows.length
     ? rows
     : [
         {
           ticker: "STBY",
-          conviction: "Standby",
+          meta: "Monitor only",
           headline: "Fresh catalysts populate here as the daily brief updates.",
         },
       ];
@@ -177,7 +125,7 @@ function WatchlistCard({ title, description, rows }) {
     <article className={`watchlist-card watchlist-card-${tone}`}>
       <div className="watchlist-card-head">
         <div className="eyebrow">{title}</div>
-        <span className="watchlist-chip">{tone === "up" ? "Long Flow" : "Short Flow"}</span>
+        <span className="watchlist-chip">{chip || (tone === "down" ? "Headline short" : "Headline long")}</span>
       </div>
       <p>{description}</p>
       <div className="ticker-list">
@@ -185,7 +133,7 @@ function WatchlistCard({ title, description, rows }) {
           <div key={`${title}-${row.ticker}`} className="ticker-row">
             <div>
               <strong>{row.ticker}</strong>
-              <span>{row.conviction} conviction</span>
+              <span>{row.meta}</span>
             </div>
             <p>{row.headline}</p>
           </div>
@@ -195,7 +143,7 @@ function WatchlistCard({ title, description, rows }) {
   );
 }
 
-function SignalLane({ title, tone, summary, rows }) {
+function SignalLane({ title, tone, summary, rows, pillLabel }) {
   return (
     <article className={`signal-lane signal-lane-${tone}`}>
       <div className="lane-head">
@@ -203,14 +151,14 @@ function SignalLane({ title, tone, summary, rows }) {
           <span className="eyebrow">{title}</span>
           <h3>{summary}</h3>
         </div>
-        <span className={`lane-pill lane-pill-${tone}`}>{tone === "up" ? "Active Longs" : "Pressure Shorts"}</span>
+        <span className={`lane-pill lane-pill-${tone}`}>{pillLabel}</span>
       </div>
       <div className="lane-list">
         {rows.map((row) => (
           <div key={`${title}-${row.ticker}`} className="signal-row" tabIndex={0}>
             <div className="signal-ticker-stack">
               <strong>{row.ticker}</strong>
-              <span>{row.conviction}</span>
+              <span>{row.meta}</span>
             </div>
             <p>{row.headline}</p>
           </div>
@@ -221,61 +169,24 @@ function SignalLane({ title, tone, summary, rows }) {
 }
 
 export default function HomePage() {
-  const { markdown, sampleCards, stockBySide, cryptoBySide } = getTradeOpsContent();
+  const { markdown, noiseStream, sampleCards, signalPanels, structureSummary } = getTradeOpsContent();
 
   const signalMetrics = [
-    { label: "Symbols Scanned", value: "8,000+", note: "Illustrative product capability" },
-    { label: "Signal Lanes", value: "4", note: "Stocks and crypto, long and short" },
+    { label: "Brief Format", value: "Morning Edge", note: "Illustrative Discord format" },
+    { label: "Priority Tiers", value: "3", note: "P1, P2, and P3 hierarchy" },
+    { label: "Headline Setups", value: "Long + Short", note: "Best setup on each side" },
     { label: "Decision Time", value: "< 5 min", note: "Built for the morning process" },
-    { label: "Output", value: "Daily Brief", note: "Example Discord format" },
   ];
 
-  const signalLanes = [
-    {
-      title: "Stocks Long",
-      tone: "up",
-      summary: "Relative strength lanes with upside catalysts and momentum follow-through.",
-      rows: buildLaneRows(stockBySide.long, "Fresh upside catalyst is building into the session."),
-    },
-    {
-      title: "Stocks Short",
-      tone: "down",
-      summary: "Weakness lanes where failed rebounds and negative catalysts matter most.",
-      rows: buildLaneRows(stockBySide.short, "Fresh downside pressure is setting up on the tape."),
-    },
-    {
-      title: "Crypto Long",
-      tone: "up",
-      summary: "Participation lanes showing constructive flow, continuation, and broad support.",
-      rows: buildLaneRows(cryptoBySide.long, "Fresh upside participation is setting up in crypto."),
-    },
-    {
-      title: "Crypto Short",
-      tone: "down",
-      summary: "Pressure lanes highlighting failed bounces and heavy beta exposure.",
-      rows: buildLaneRows(cryptoBySide.short, "Fresh pressure is widening across crypto majors."),
-    },
-  ];
-
-  const heroSignals = signalLanes
+  const heroSignals = signalPanels
     .flatMap((lane) =>
       lane.rows.slice(0, 1).map((row) => ({
         lane: lane.title,
         ticker: row.ticker,
-        conviction: row.conviction.toUpperCase(),
+        meta: row.meta.toUpperCase(),
       })),
     )
     .slice(0, 4);
-
-  const noiseStream = flattenRowsForNoise(sampleCards).slice(0, 8);
-
-  const structureSummary = signalLanes.map((lane) => ({
-    title: lane.title,
-    tickers: lane.rows
-      .slice(0, 2)
-      .map((row) => row.ticker)
-      .join(" / "),
-  }));
 
   return (
     <AttributionPage pageType="home">
@@ -320,17 +231,18 @@ export default function HomePage() {
             <p className="hero-tag">Illustrative product preview</p>
             <h1>Signal. Not Noise.</h1>
             <p className="lede">
-              TradeOps is designed to scan stock and crypto news, detect meaningful catalysts, and
-              turn the chaos into a structured long and short operating board for active traders.
+              TradeOps turns stock and crypto catalysts into a Morning Edge briefing with market
+              weather, a trade read, best long, best short, priority tiers, and confirmation notes
+              for active traders.
             </p>
-            <p className="hero-note">Public site preview only. This page shows examples, not a live feed.</p>
+            <p className="hero-note">Public site preview only. This page shows an illustrative briefing, not a live feed.</p>
 
             <div className="hero-actions">
-              <TrackedActionLink className="button button-primary" href="/join">
-                Join the Discord
+              <TrackedActionLink className="button button-primary" href="/pricing">
+                Start TradeOps Pro
               </TrackedActionLink>
-              <a className="button button-secondary" href="#sample-watchlist">
-                See Sample Watchlist
+              <a className="button button-secondary" href="#sample-brief">
+                See Sample Brief
               </a>
             </div>
           </div>
@@ -360,7 +272,7 @@ export default function HomePage() {
                   [ SCANNING MARKET ]
                 </div>
                 {heroSignals.map((item, index) => {
-                  const text = `+ ${item.ticker} / ${item.conviction} CONVICTION`;
+                  const text = `+ ${item.ticker} / ${item.meta}`;
                   return (
                     <div
                       key={`terminal-${item.lane}-${item.ticker}`}
@@ -384,27 +296,27 @@ export default function HomePage() {
       <section className="operations-section">
         <div className="section-heading">
           <span className="eyebrow">Operating Board</span>
-          <h2>Four signal lanes. One structured decision board.</h2>
+          <h2>One briefing. Clear hierarchy.</h2>
           <p>
-            TradeOps is built like a morning operations center: separate the tape into actionable
-            lanes, rank conviction, and move from reaction to preparation.
+            TradeOps is built like a morning operations center: set the environment first, rank the
+            top setups, and make it obvious what deserves immediate attention versus confirmation only.
           </p>
         </div>
 
         <div className="signal-board">
-          {signalLanes.map((lane) => (
+          {signalPanels.map((lane) => (
             <SignalLane key={lane.title} {...lane} />
           ))}
         </div>
       </section>
 
-      <section id="sample-watchlist" className="sample-block">
+      <section id="sample-brief" className="sample-block">
         <div className="section-heading">
           <span className="eyebrow">Sample Output</span>
-          <h2>This is what members actually receive.</h2>
+          <h2>This is what members actually receive in Discord.</h2>
           <p>
-            A clean cross-market brief with long-side and short-side names, conviction, thesis,
-            trigger, and risk. No data dump. No noise.
+            A clean Morning Edge briefing with market weather, market regime, a trade read, best long,
+            best short, priority tiers, market confirmation, and risk framing. No data dump. No noise.
           </p>
         </div>
 
@@ -419,9 +331,9 @@ export default function HomePage() {
             </div>
 
             <div className="discord-metadata">
-              <span>tradeops-sample-watchlist</span>
+              <span>tradeops-morning-edge</span>
               <span>Cross-market example</span>
-              <span>Preview format</span>
+              <span>Embed-first briefing preview</span>
             </div>
 
             <BriefLines markdown={markdown} />
@@ -430,19 +342,19 @@ export default function HomePage() {
           <div className="sample-side">
             <div className="insight-card">
               <span className="eyebrow">What it solves</span>
-              <h3>Start with a sharper screen list.</h3>
+              <h3>Start with a clearer morning board.</h3>
               <p>
-                Use TradeOps before the session to decide which names deserve alerts, which ones are
-                building pressure, and which ideas are worth watching on the long side or short side.
+                Use TradeOps before the session to understand the environment, identify the best long
+                and short, and rank what is actually worth your attention.
               </p>
             </div>
 
             <div className="insight-card">
               <span className="eyebrow">What it avoids</span>
-              <h3>Less scrolling, less sorting, less guessing.</h3>
+              <h3>Less scrolling, less sorting, less fake urgency.</h3>
               <p>
-                The product is built to narrow attention, not widen it. The value is the filter, not
-                the noise.
+                TradeOps is built to stop every ticker from looking equally important. The value is the
+                hierarchy, not just the headline feed.
               </p>
             </div>
           </div>
@@ -452,10 +364,10 @@ export default function HomePage() {
       <section className="problem-grid">
         <div className="section-heading">
           <span className="eyebrow">Chaos To Structure</span>
-          <h2>Markets are noisy. Your watchlist should not be.</h2>
+          <h2>Markets are noisy. Your morning brief should not be.</h2>
           <p>
-            TradeOps filters an unstructured headline flood into a smaller, cleaner set of
-            directional signals that can actually drive the morning process.
+            TradeOps filters an unstructured headline flood into a ranked operating brief that can
+            actually drive the morning process.
           </p>
         </div>
 
@@ -497,7 +409,7 @@ export default function HomePage() {
                     <strong>{item.title}</strong>
                     <span>{item.tickers || "Standby"}</span>
                   </div>
-                  <p>Focused lane with ranked conviction and cleaner execution context.</p>
+                  <p>Focused section with clearer hierarchy, named catalysts, and cleaner execution context.</p>
                 </div>
               ))}
             </div>
@@ -507,11 +419,12 @@ export default function HomePage() {
         <div className="problem-copy">
           <p>
             Every day traders face headlines, earnings reactions, crypto updates, lawsuits, upgrades,
-            downgrades, ETF news, listings, and endless ticker chatter. Most of it is noise.
+            downgrades, ETF news, listings, and endless ticker chatter. Most of it arrives with no
+            built-in hierarchy.
           </p>
           <p>
-            TradeOps filters that chaos into a short list of names where something meaningful may be
-            developing right now.
+            TradeOps filters that chaos into a short morning brief where the environment, the top
+            setups, and the confirmation layer are already separated for you.
           </p>
         </div>
       </section>
@@ -519,10 +432,10 @@ export default function HomePage() {
       <section className="cards-section">
         <div className="section-heading">
           <span className="eyebrow">What members get</span>
-          <h2>A daily focus system for stocks and crypto.</h2>
+          <h2>A briefing structure built for trader decisions.</h2>
           <p>
-            The product is built around outcomes. Members get names, direction, conviction, and
-            trader-ready framing.
+            The product is built around hierarchy. Members get event-backed setups, ranked focus, and
+            trader-ready framing inside Discord.
           </p>
         </div>
 
@@ -536,25 +449,25 @@ export default function HomePage() {
       <section className="workflow-section">
         <div className="section-heading">
           <span className="eyebrow">Workflow</span>
-          <h2>From market noise to trader-ready focus.</h2>
-          <p>TradeOps is designed to organize chaos into a repeatable briefing loop before the session.</p>
+          <h2>From raw catalysts to a repeatable morning brief.</h2>
+          <p>TradeOps is designed to organize chaos into the same briefing loop members can learn every morning.</p>
         </div>
 
         <div className="workflow-grid">
           <article>
             <span>01</span>
             <h3>Scan</h3>
-            <p>TradeOps monitors fresh stock and crypto news across the market.</p>
+            <p>TradeOps monitors fresh stock and crypto catalysts across the market.</p>
           </article>
           <article>
             <span>02</span>
-            <h3>Rank</h3>
-            <p>It surfaces names where developing catalysts appear strong enough to matter now.</p>
+            <h3>Structure</h3>
+            <p>It separates the environment, the top setups, the priority board, and the confirmation layer.</p>
           </article>
           <article>
             <span>03</span>
             <h3>Brief</h3>
-            <p>It turns the best long-side and short-side ideas into a clean Discord-ready post.</p>
+            <p>It turns the board into a clean Discord-ready Morning Edge briefing.</p>
           </article>
         </div>
       </section>
@@ -563,7 +476,7 @@ export default function HomePage() {
         <div className="section-heading">
           <span className="eyebrow">Positioning</span>
           <h2>Not another news feed.</h2>
-          <p>TradeOps exists to narrow attention, not widen it. The advantage is the operating filter.</p>
+          <p>TradeOps exists to narrow attention, not widen it. The advantage is the operating hierarchy.</p>
         </div>
 
         <div className="comparison-table">
@@ -585,8 +498,8 @@ export default function HomePage() {
           <span className="eyebrow">Use cases</span>
           <h2>Built for active traders who need a sharper morning process.</h2>
           <p>
-            Use TradeOps before the session to build your screen, prepare alerts, and understand
-            where fresh pressure is building.
+            Use TradeOps before the session to understand the tape, build your screen, prepare alerts,
+            and avoid spending the first hour ranking everything manually.
           </p>
         </div>
 
@@ -604,8 +517,8 @@ export default function HomePage() {
           <span className="eyebrow">Launch Offer</span>
           <h2>TradeOps Pro is $29 per month.</h2>
           <p>
-            One clear offer for launch. Join the Discord, get the daily brief, and keep your morning
-            process focused.
+            One clear offer for launch. Join the Discord, get the Morning Edge briefing, and keep your
+            morning process focused.
           </p>
         </div>
 
@@ -630,7 +543,7 @@ export default function HomePage() {
               </ul>
               <div className="pricing-card-actions">
                 <TrackedActionLink className="button button-primary" href="/pricing">
-                  View Pricing Setup
+                  Start TradeOps Pro
                 </TrackedActionLink>
               </div>
             </article>
@@ -657,18 +570,18 @@ export default function HomePage() {
       <section id="final-cta" className="final-cta">
         <div>
           <span className="eyebrow">Final CTA</span>
-          <h2>Turn the market into a watchlist you can actually use.</h2>
+          <h2>Start each session with a brief you can actually use.</h2>
           <p>
             TradeOps is built to help traders cut through noise and focus on the few stock and crypto
-            names that may actually matter today.
+            names that actually deserve attention this morning.
           </p>
         </div>
         <div className="cta-actions">
-          <TrackedActionLink className="button button-primary" href="/join">
-            Join the Discord
+          <TrackedActionLink className="button button-primary" href="/pricing">
+            Start TradeOps Pro
           </TrackedActionLink>
-          <a className="button button-secondary" href="#sample-watchlist">
-            See Sample Watchlist
+          <a className="button button-secondary" href="#sample-brief">
+            See Sample Brief
           </a>
         </div>
       </section>
