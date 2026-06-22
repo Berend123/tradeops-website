@@ -250,8 +250,8 @@ export default async function JoinPage({ searchParams }) {
             <span className="eyebrow">Help</span>
             <h2>Need help getting in?</h2>
             <p>
-              Use the TradeOps Discord if you need help finishing the claim or linking the correct
-              account.
+              Use the TradeOps Discord and talk to Berend if you need help finishing the claim or
+              linking the correct account.
             </p>
             <div className="subpage-actions">
               <TrackedActionLink
