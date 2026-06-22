@@ -64,8 +64,8 @@ export default async function AccountPage() {
             <h2>{connectedLabel || "Discord-linked member session"}</h2>
             <p>
               {discordLink
-                ? `Website access is currently linked to ${connectedLabel}. Billing email on file: ${session.email}.`
-                : `Website access is active, but this account has not finished linking a Discord identity yet. Billing email on file: ${session.email}.`}
+                ? `Website access is currently linked to ${connectedLabel}. Billing identity on file: ${session.email}.`
+                : `Website access is active, but this account has not finished linking a Discord identity yet. Billing identity on file: ${session.email}.`}
             </p>
           </article>
           <article className="member-card">

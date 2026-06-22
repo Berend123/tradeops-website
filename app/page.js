@@ -229,6 +229,18 @@ export default async function HomePage() {
               <span className="eyebrow">Market Operations Center</span>
             </div>
 
+            <div className="hero-actions">
+              <a className="button button-primary" href="#pricing">
+                Start TradeOps Pro
+              </a>
+              <TrackedActionLink className="button button-secondary" href="/login">
+                Member Login
+              </TrackedActionLink>
+              <a className="button button-secondary" href="#sample-brief">
+                See Sample Brief
+              </a>
+            </div>
+
             <div className="hero-logo-shell">
               <Image
                 src="/TradeOpsLogoTransparent.png"
@@ -240,25 +252,14 @@ export default async function HomePage() {
               />
             </div>
 
-            <p className="hero-tag">Illustrative product preview</p>
-            <h1>Signal. Not Noise.</h1>
-            <p className="lede">
-              TradeOps turns stock and crypto catalysts into a Morning Edge briefing with market
-              weather, a trade read, best long, best short, priority tiers, and confirmation notes
-              for active traders.
-            </p>
-            <p className="hero-note">Public site preview only. This page shows an illustrative briefing, not a live feed.</p>
-
-            <div className="hero-actions">
-              <a className="button button-primary" href="#pricing">
-                Start TradeOps Pro
-              </a>
-              <TrackedActionLink className="button button-secondary" href="/login">
-                Member Login
-              </TrackedActionLink>
-              <a className="button button-secondary" href="#sample-brief">
-                See Sample Brief
-              </a>
+            <div className="hero-copy">
+              <h1>Signal. Not Noise.</h1>
+              <p className="lede">
+                TradeOps turns stock and crypto catalysts into a Morning Edge briefing with market
+                weather, a trade read, best long, best short, priority tiers, and confirmation notes
+                for active traders.
+              </p>
+              <p className="hero-note">Public site preview only. This page shows an illustrative briefing, not a live feed.</p>
             </div>
           </div>
 

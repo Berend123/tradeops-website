@@ -75,6 +75,57 @@ test("createLemonCheckoutSession builds a live Lemon Squeezy checkout without te
 });
 
 
+test("createLemonCheckoutSession omits blank custom identity fields", async (t) => {
+  const originalFetch = global.fetch;
+  t.after(() => {
+    global.fetch = originalFetch;
+  });
+
+  global.fetch = async (url, init = {}) => {
+    assert.equal(url, "https://api.lemonsqueezy.com/v1/checkouts");
+    const body = JSON.parse(init.body);
+    const custom = body.data.attributes.checkout_data.custom;
+    assert.equal(custom.plan_id, "tradeops_pro");
+    assert.equal(custom.email_hash, undefined);
+    assert.equal(custom.relationship_id, undefined);
+    return new Response(
+      JSON.stringify({
+        data: {
+          id: "checkout_live_blank_identity",
+          attributes: {
+            url: "https://tradeopshq.lemonsqueezy.com/checkout/custom/checkout_live_blank_identity",
+          },
+        },
+      }),
+      { status: 200, headers: { "Content-Type": "application/json" } },
+    );
+  };
+
+  const session = await createLemonCheckoutSession({
+    payload: {
+      plan_id: "tradeops_pro",
+      plan_name: "TradeOps Pro",
+      amount: 29,
+      billing_interval: "monthly",
+      source: "website",
+      campaign: "website_checkout",
+      username: "alpha",
+    },
+    origin: "https://tradeops.org",
+    env: {
+      LEMON_SQUEEZY_API_KEY: "ls_key",
+      LEMON_SQUEEZY_STORE_ID: "409011",
+      LEMON_SQUEEZY_PRODUCT_ID: "1149930",
+      LEMON_SQUEEZY_VARIANT_ID: "1799365",
+      LEMON_SQUEEZY_TEST_MODE: "false",
+    },
+  });
+
+  assert.equal(session.provider, "lemon_squeezy");
+  assert.equal(session.checkout_url, "https://tradeopshq.lemonsqueezy.com/checkout/custom/checkout_live_blank_identity");
+});
+
+
 test("discoverLemonCatalog matches a monthly plan to a month interval variant", async (t) => {
   const originalFetch = global.fetch;
   t.after(() => {

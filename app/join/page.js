@@ -35,11 +35,6 @@ function buildJoinCopy(joinState) {
   };
 }
 
-function getSupportEmail() {
-  return process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "support@tradeops.org";
-}
-
-
 function buildJoinNotice({
   hasDiscordSession,
   hasActivePro,
@@ -98,7 +93,6 @@ export default async function JoinPage({ searchParams }) {
   const access = memberSession?.userId ? await getMemberAccessStateForUser(memberSession.userId).catch(() => null) : null;
   const joinState = resolveJoinPageState(resolvedSearchParams);
   const joinCopy = buildJoinCopy(joinState);
-  const supportEmail = getSupportEmail();
   const discordUrl = process.env.NEXT_PUBLIC_DISCORD_URL || "https://discord.gg/ZMuqZmN2qy";
   const redirectTo = sanitizeInternalRedirectPath(resolvedSearchParams.redirect || "/dashboard");
   const connectHref = buildDiscordConnectHref({
@@ -197,9 +191,6 @@ export default async function JoinPage({ searchParams }) {
             >
               Use Invite Link
             </TrackedActionLink>
-            <a className="button button-secondary" href={`mailto:${supportEmail}`}>
-              Contact Support
-            </a>
           </div>
         </section>
 
@@ -248,7 +239,7 @@ export default async function JoinPage({ searchParams }) {
               <span className="join-step-index">04</span>
               <h3>Open the dashboard after the claim succeeds</h3>
               <p>
-                Once the claim completes, the site starts your member session and sends you straight into the Morning Edge dashboard. If anything still looks wrong, email <a href={`mailto:${supportEmail}`}>{supportEmail}</a>.
+                Once the claim completes, the site starts your member session and sends you straight into the Morning Edge dashboard. If anything still looks wrong, reopen the Discord invite above and ask for help inside the server.
               </p>
             </article>
           </div>
@@ -256,11 +247,29 @@ export default async function JoinPage({ searchParams }) {
 
         <section className="subpage-panel">
           <div className="section-heading">
-            <span className="eyebrow">Support</span>
+            <span className="eyebrow">Help</span>
             <h2>Need help getting in?</h2>
             <p>
-              Support: <a href={`mailto:${supportEmail}`}>{supportEmail}</a>
+              Use the TradeOps Discord if you need help finishing the claim or linking the correct
+              account.
             </p>
+            <div className="subpage-actions">
+              <TrackedActionLink
+                className="button button-secondary"
+                href={discordUrl}
+                eventType="discord_button_click"
+                metadata={{
+                  destination: "discord_join",
+                  page_type: "join",
+                  checkout_confirmed: joinState.checkoutConfirmed,
+                  support_intent: true,
+                }}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Open TradeOps Discord
+              </TrackedActionLink>
+            </div>
             <p className="join-disclaimer">
               TradeOps provides market research and educational content only. It is not financial,
               investment, tax, or legal advice.

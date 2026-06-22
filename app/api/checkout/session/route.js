@@ -10,6 +10,15 @@ import {
 import { DISCORD_SESSION_COOKIE, parseDiscordSession } from "../../../../lib/discord-oauth";
 
 
+function shouldFallbackFromCheckoutProxy(result) {
+  if (shouldFallbackToDirect(result)) {
+    return true;
+  }
+  const errorMessage = typeof result?.body?.error === "string" ? result.body.error : "";
+  return result?.status === 422 && errorMessage.includes("Lemon Squeezy request failed");
+}
+
+
 export async function POST(request) {
   const payload = await request.json().catch(() => null);
   const cookieStore = await cookies();
@@ -27,7 +36,8 @@ export async function POST(request) {
         payload: normalizedPayload,
       })
     : null;
-  if (proxied && !shouldFallbackToDirect(proxied)) {
+  const fallbackFromProxy = shouldFallbackFromCheckoutProxy(proxied);
+  if (proxied && !fallbackFromProxy) {
     return NextResponse.json(proxied.body, { status: proxied.status });
   }
 
@@ -42,6 +52,9 @@ export async function POST(request) {
       fallback_mode: "direct_lemon_squeezy",
     };
     if (proxied?.body?.error && !proxied.networkError) {
+      if (fallbackFromProxy) {
+        return NextResponse.json(fallbackBody, { status: 400 });
+      }
       return NextResponse.json(proxied.body, { status: proxied.status });
     }
     return NextResponse.json(fallbackBody, { status: 400 });

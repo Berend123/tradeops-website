@@ -46,12 +46,6 @@ Current environment variables:
 - `TRADEOPS_DISCORD_PREMIUM_ROLE_NAME`
 - `TRADEOPS_DISCORD_PREMIUM_CHANNELS`
 
-Optional legacy email-login settings:
-
-- `AUTH_FROM_EMAIL`
-- `RESEND_API_KEY`
-- `AUTH_ALLOW_PREVIEW_LINKS`
-
 `TRADEOPS_CONVERSION_API_BASE_URL` should point at the Python conversion API server that exposes:
 
 - `POST /api/attribution/event`
@@ -60,7 +54,7 @@ Optional legacy email-login settings:
 - `POST /api/discord/join`
 - `GET /api/health`
 
-The Next.js app proxies browser requests to that backend so `atid`, first-touch, last-touch, email capture, checkout handoff, and Discord join attribution all stay first-party.
+The Next.js app proxies browser requests to that backend so `atid`, first-touch, last-touch, checkout handoff, and Discord join attribution all stay first-party.
 
 If the conversion API is unavailable, the checkout session route can fall back to creating a Lemon Squeezy hosted checkout directly from the website runtime. The webhook route can also verify and acknowledge Lemon Squeezy webhooks directly so live payments are not blocked by a missing backend host.
 

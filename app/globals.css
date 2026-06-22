@@ -359,8 +359,13 @@ summary:focus-visible,
 .hero-logo-shell {
   position: relative;
   width: min(100%, 720px);
-  margin: 0 auto 4px;
+  margin: 0 auto -34px;
   aspect-ratio: 2 / 1;
+  transform: translateY(-38px);
+}
+
+.hero-copy {
+  transform: translateY(-38px);
 }
 
 .hero-logo-shell::before {
@@ -376,16 +381,8 @@ summary:focus-visible,
   object-position: center;
 }
 
-.hero-tag {
-  margin: 0 0 6px;
-  color: var(--brand-red-soft);
-  font-size: 0.82rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-}
-
 .hero h1 {
-  margin: 6px auto 18px;
+  margin: 0 auto 18px;
   max-width: none;
   width: fit-content;
   font-size: clamp(1.8rem, 5.8vw, 5.6rem);
@@ -410,13 +407,24 @@ summary:focus-visible,
   text-transform: uppercase;
 }
 
+.hero-deck {
+  transform: translateY(-38px);
+}
+
 .hero-actions,
 .cta-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 14px;
-  margin-top: 30px;
   justify-content: center;
+}
+
+.hero-actions {
+  margin: 18px auto 26px;
+}
+
+.cta-actions {
+  margin-top: 30px;
 }
 
 .button {
@@ -1767,6 +1775,13 @@ summary:focus-visible,
   .hero-logo-shell {
     width: min(100%, 560px);
     aspect-ratio: 1.72 / 1;
+    margin-bottom: -18px;
+    transform: translateY(-24px);
+  }
+
+  .hero-copy,
+  .hero-deck {
+    transform: translateY(-24px);
   }
 
   .hero-actions,

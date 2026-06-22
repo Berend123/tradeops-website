@@ -44,8 +44,8 @@ export default async function LoginPage({ searchParams }) {
           <h2>Continue with the Discord account you use for TradeOps.</h2>
           <p>
             If your Discord account is already linked to an active TradeOps Pro membership, the
-            dashboard opens immediately. If your checkout email was different, the join page will
-            let you claim access after Discord sign-in.
+            dashboard opens immediately. If your purchase used a different billing email, the join
+            page will let you claim access after Discord sign-in.
           </p>
         </div>
         {errorMessage ? (
