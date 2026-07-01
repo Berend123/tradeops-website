@@ -28,3 +28,15 @@ test("resolveJoinPageState marks access confirmed only when positive status and 
   assert.equal(result.confirmationReferenceKey, "subscription_id");
   assert.equal(result.confirmationReference, "sub_123");
 });
+
+test("resolveJoinPageState accepts a checkout session reference in the success URL", () => {
+  const result = resolveJoinPageState({
+    checkout: "success",
+    session_id: "u-1",
+  });
+
+  assert.equal(result.checkoutConfirmed, true);
+  assert.equal(result.confirmationKey, "checkout");
+  assert.equal(result.confirmationReferenceKey, "session_id");
+  assert.equal(result.confirmationReference, "u-1");
+});
