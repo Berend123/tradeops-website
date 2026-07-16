@@ -409,6 +409,14 @@ export default function HendrikFuchsPage() {
               explicit controls. Model output is treated as a hypothesis that must cite available
               evidence and still requires analyst validation.
             </p>
+            <a
+              className="founder-evidence-link"
+              href="https://github.com/Berend123/hunter-reconpilot"
+              target="_blank"
+              rel="noreferrer"
+            >
+              View project on GitHub <span aria-hidden="true">&#8599;</span>
+            </a>
           </div>
           <dl className="founder-research-project-facts">
             <div>
