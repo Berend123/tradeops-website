@@ -9,11 +9,21 @@ const socialLinks = [
 
 const projects = [
   {
+    name: "TradeOps",
+    category: "Founder / Market Intelligence",
+    description:
+      "A market-research platform built from concept to implementation, combining software architecture, data processing, AI-assisted workflows, member delivery, and product operations.",
+    href: "/",
+    linkLabel: "View TradeOps",
+    featured: true,
+  },
+  {
     name: "Bargain Bashers",
     category: "Product Engineering",
     description:
       "A software product built around practical user workflows, structured application logic, and a production-minded implementation.",
     href: "https://github.com/Berend123/BargainBahshers",
+    linkLabel: "View on GitHub",
   },
   {
     name: "MarineInsight",
@@ -21,6 +31,7 @@ const projects = [
     description:
       "A data-focused project exploring how domain information can be processed, organized, and presented as a useful software system.",
     href: "https://github.com/Berend123/MarineInsight",
+    linkLabel: "View on GitHub",
   },
   {
     name: "CoreBankingApi",
@@ -28,6 +39,7 @@ const projects = [
     description:
       "An API-centered banking system project focused on backend boundaries, business rules, and dependable data flows.",
     href: "https://github.com/Berend123/CoreBankingApi",
+    linkLabel: "View on GitHub",
   },
   {
     name: "BrowserBridge",
@@ -35,6 +47,67 @@ const projects = [
     description:
       "A technical bridge for browser-driven workflows, reflecting an interest in automation, integration, and software internals.",
     href: "https://github.com/Berend123/BrowserBridge",
+    linkLabel: "View on GitHub",
+  },
+];
+
+const timeline = [
+  {
+    period: "2011-2013",
+    title: "Technical training",
+    description: "Developed practical technical foundations before moving into software engineering.",
+  },
+  {
+    period: "2013-2017",
+    title: "Architectural design & technical work",
+    description: "Worked in technical environments where precision, planning, and translating requirements into practical output mattered.",
+  },
+  {
+    period: "2014-Present",
+    title: "Self-directed programming",
+    description: "Built programming knowledge independently through study, experimentation, and complete software projects.",
+  },
+  {
+    period: "2017-2020",
+    title: "Business software",
+    description: "Built software around operational requirements, automation, data, and real business workflows.",
+  },
+  {
+    period: "2020-Present",
+    title: "Independent software development",
+    description: "Delivered custom software directly to clients across web applications, backend systems, automation, and technical problem solving.",
+  },
+  {
+    period: "Present",
+    title: "Founder of TradeOps",
+    description: "Leads the product vision and technical implementation of the TradeOps platform.",
+  },
+];
+
+const systemsResearch = [
+  {
+    title: "Windows Analysis",
+    description: "Examining application behavior, executable structure, and software internals in controlled environments.",
+  },
+  {
+    title: "Android Analysis",
+    description: "Studying application packages, behavior, and implementation details on owned or authorized software.",
+  },
+  {
+    title: "IDA Workflows",
+    description: "Using static analysis workflows to understand compiled code, control flow, and program structure.",
+  },
+  {
+    title: "Python Tooling",
+    description: "Building small tools that support analysis, repeatable experiments, and technical investigation.",
+  },
+  {
+    title: "Crackmes Challenges",
+    description: "Practicing reverse-engineering fundamentals through purpose-built crackmes challenges.",
+  },
+  {
+    title: "Secure Development",
+    description: "Applying systems research to vulnerability awareness, responsible disclosure, and safer software design.",
   },
 ];
 
@@ -62,14 +135,14 @@ const engineeringAreas = [
 export const metadata = {
   title: "Hendrik Fuchs | Founder of TradeOps",
   description:
-    "Hendrik Fuchs is the founder of TradeOps, a self-taught software engineer and independent researcher from Namibia working across software, AI, data systems, and systems research.",
+    "Hendrik Fuchs is the founder of TradeOps, a self-taught software engineer and systems researcher from Namibia working across software, AI, data systems, and software internals.",
   alternates: {
     canonical: "/hendrik-fuchs",
   },
   openGraph: {
     title: "Hendrik Fuchs | Founder of TradeOps",
     description:
-      "Founder, software engineer, and independent researcher building software systems from Namibia.",
+      "Founder, software engineer, and systems researcher building software systems from Namibia.",
     type: "profile",
     url: "/hendrik-fuchs",
   },
@@ -80,14 +153,16 @@ export default function HendrikFuchsPage() {
     "@context": "https://schema.org",
     "@type": "Person",
     name: "Hendrik Fuchs",
-    jobTitle: "Founder and Software Engineer",
+    jobTitle: "Founder, Software Engineer, and Systems Researcher",
     description:
-      "Founder of TradeOps, self-taught software engineer, and independent researcher from Namibia.",
+      "Founder of TradeOps, self-taught software engineer, and systems researcher from Namibia.",
     email: "mailto:masingdesign@gmail.com",
     url: "https://tradeops.org/hendrik-fuchs",
     sameAs: [
       "https://github.com/Berend123",
       "https://www.linkedin.com/in/hendrik-fuchs-1a74bba3",
+      "https://www.fiverr.com/s/Eg3QPA0",
+      "https://www.udemy.com/user/berend-fuchs/",
     ],
     worksFor: {
       "@type": "Organization",
@@ -117,7 +192,7 @@ export default function HendrikFuchsPage() {
             <span className="founder-role-separator">•</span>
             <span className="founder-role-label">Software Engineer</span>
             <span className="founder-role-separator">•</span>
-            <span className="founder-role-label">Independent Researcher</span>
+            <span className="founder-role-label">Systems Researcher</span>
           </p>
           <p className="founder-intro">
             A technical founder building software systems, exploring artificial intelligence, and
@@ -189,22 +264,14 @@ export default function HendrikFuchsPage() {
               eventually led him to found TradeOps and build the platform from the ground up.
             </p>
           </div>
-          <div className="founder-path" aria-label="Professional path">
-            <div className="founder-path-step">
-              <span>01</span>
-              <strong>Self-directed learning</strong>
-              <p>Built technical foundations through study, experimentation, and shipping real work.</p>
-            </div>
-            <div className="founder-path-step">
-              <span>02</span>
-              <strong>Independent development</strong>
-              <p>Applied those skills across client systems, products, automation, and data projects.</p>
-            </div>
-            <div className="founder-path-step">
-              <span>03</span>
-              <strong>TradeOps</strong>
-              <p>Combined product thinking, research workflows, and software architecture in one platform.</p>
-            </div>
+          <div className="founder-path founder-timeline" aria-label="Professional timeline">
+            {timeline.map((item) => (
+              <div key={`${item.period}-${item.title}`} className="founder-path-step">
+                <span>{item.period}</span>
+                <strong>{item.title}</strong>
+                <p>{item.description}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -264,15 +331,15 @@ export default function HendrikFuchsPage() {
           {projects.map((project) => (
             <a
               key={project.name}
-              className="founder-project-card"
+              className={`founder-project-card${project.featured ? " founder-project-card-featured" : ""}`}
               href={project.href}
-              target="_blank"
-              rel="noreferrer"
+              target={project.href.startsWith("http") ? "_blank" : undefined}
+              rel={project.href.startsWith("http") ? "noreferrer" : undefined}
             >
               <span className="founder-project-category">{project.category}</span>
               <h3>{project.name}</h3>
               <p>{project.description}</p>
-              <span className="founder-project-link">View on GitHub <span aria-hidden="true">↗</span></span>
+              <span className="founder-project-link">{project.linkLabel} <span aria-hidden="true">↗</span></span>
             </a>
           ))}
         </div>
@@ -287,6 +354,9 @@ export default function HendrikFuchsPage() {
             practical programming concepts. Teaching has strengthened his ability to break technical
             ideas into understandable steps without removing the details that make them useful.
           </p>
+          <a className="founder-evidence-link" href="https://www.udemy.com/user/berend-fuchs/" target="_blank" rel="noreferrer">
+            View Udemy profile <span aria-hidden="true">↗</span>
+          </a>
         </article>
 
         <article className="subpage-panel founder-feature-panel">
@@ -297,6 +367,9 @@ export default function HendrikFuchsPage() {
             The work has involved building custom solutions, working directly with clients, and
             translating business requirements into technical systems that can be used in practice.
           </p>
+          <a className="founder-evidence-link" href="https://www.fiverr.com/s/Eg3QPA0" target="_blank" rel="noreferrer">
+            View Fiverr profile <span aria-hidden="true">↗</span>
+          </a>
         </article>
       </section>
 
@@ -307,9 +380,8 @@ export default function HendrikFuchsPage() {
             <h2>Studying what software does beneath the interface.</h2>
             <p>
               Alongside software development, Hendrik maintains an interest in understanding how
-              software works internally. This includes reverse engineering, Windows software analysis,
-              Android application analysis, IDA, Python-based tooling, crackmes challenges,
-              vulnerability research, secure development, and responsible disclosure.
+              software works internally. The work is practical and exploratory, connecting reverse
+              engineering techniques with better vulnerability awareness and more secure software development.
             </p>
           </div>
           <div className="founder-research-note">
@@ -319,6 +391,15 @@ export default function HendrikFuchsPage() {
               authorization has been granted.
             </p>
           </div>
+        </div>
+        <div className="founder-research-grid">
+          {systemsResearch.map((item, index) => (
+            <article key={item.title} className="founder-research-card">
+              <span>{String(index + 1).padStart(2, "0")}</span>
+              <h3>{item.title}</h3>
+              <p>{item.description}</p>
+            </article>
+          ))}
         </div>
       </section>
 

@@ -1774,6 +1774,10 @@ summary:focus-visible,
   padding-left: 28px;
 }
 
+.founder-timeline {
+  gap: 18px;
+}
+
 .founder-path::before {
   content: "";
   position: absolute;
@@ -1911,6 +1915,14 @@ summary:focus-visible,
   background: rgba(230, 58, 79, 0.045);
 }
 
+.founder-project-card-featured {
+  grid-column: 1 / -1;
+  min-height: 220px;
+  background:
+    radial-gradient(circle at top right, rgba(230, 58, 79, 0.12), transparent 34%),
+    rgba(255, 255, 255, 0.025);
+}
+
 .founder-project-card p {
   margin: 0;
   color: var(--text-secondary);
@@ -1935,6 +1947,24 @@ summary:focus-visible,
   min-height: 330px;
 }
 
+.founder-evidence-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  margin-top: 26px;
+  color: var(--brand-red-soft);
+  font-family: var(--font-mono), "IBM Plex Mono", monospace;
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.founder-evidence-link:hover {
+  color: var(--text-primary);
+}
+
 .founder-research-note {
   align-self: center;
   padding: 24px;
@@ -1950,6 +1980,38 @@ summary:focus-visible,
 
 .founder-research-note p {
   margin-top: 12px;
+}
+
+.founder-research-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 30px;
+}
+
+.founder-research-card {
+  padding: 20px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.022);
+}
+
+.founder-research-card > span {
+  color: var(--brand-red-soft);
+  font-family: var(--font-mono), monospace;
+  font-size: 0.72rem;
+}
+
+.founder-research-card h3 {
+  margin: 12px 0 8px;
+  font-size: 1rem;
+}
+
+.founder-research-card p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.86rem;
+  line-height: 1.65;
 }
 
 .founder-philosophy {
@@ -2153,6 +2215,10 @@ summary:focus-visible,
     grid-template-columns: 1fr;
   }
 
+  .founder-research-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .founder-engineering-card {
     min-height: auto;
   }
@@ -2281,8 +2347,13 @@ summary:focus-visible,
   .founder-section-split,
   .founder-project-grid,
   .founder-two-column,
-  .founder-contact-grid {
+  .founder-contact-grid,
+  .founder-research-grid {
     grid-template-columns: 1fr;
+  }
+
+  .founder-project-card-featured {
+    grid-column: auto;
   }
 
   .founder-hero {
