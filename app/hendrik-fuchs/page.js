@@ -396,7 +396,7 @@ export default function HendrikFuchsPage() {
 
         <article className="founder-research-project">
           <div className="founder-research-project-copy">
-            <span className="eyebrow">Independent Research Project / Active Prototype</span>
+            <span className="eyebrow">Security Research &amp; Defensive Tooling</span>
             <h3>Hunter Extensions &amp; ReconPilot</h3>
             <p>
               A local security-research workspace built to reduce noise without removing the operator
@@ -420,16 +420,24 @@ export default function HendrikFuchsPage() {
           </div>
           <dl className="founder-research-project-facts">
             <div>
+              <dt>Status</dt>
+              <dd>Active research project</dd>
+            </div>
+            <div>
+              <dt>Repository</dt>
+              <dd>Public on GitHub</dd>
+            </div>
+            <div>
+              <dt>Focus</dt>
+              <dd>Defensive workflows &amp; evidence analysis</dd>
+            </div>
+            <div>
               <dt>Languages</dt>
               <dd>Java, Rust, TypeScript</dd>
             </div>
             <div>
               <dt>Interfaces</dt>
-              <dd>Burp Suite, CLI, Tauri desktop</dd>
-            </div>
-            <div>
-              <dt>Data model</dt>
-              <dd>Structured JSON / JSONL artifacts</dd>
+              <dd>Burp workflow, CLI, Tauri desktop</dd>
             </div>
             <div>
               <dt>Safety model</dt>
