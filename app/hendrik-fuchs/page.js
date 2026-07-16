@@ -86,28 +86,28 @@ const timeline = [
 
 const systemsResearch = [
   {
-    title: "Windows Analysis",
-    description: "Examining application behavior, executable structure, and software internals in controlled environments.",
+    title: "Scope-first orchestration",
+    description: "Explicit include and exclude rules, dry-run defaults, and separate execution controls keep operator intent visible.",
   },
   {
-    title: "Android Analysis",
-    description: "Studying application packages, behavior, and implementation details on owned or authorized software.",
+    title: "Attack-surface mapping",
+    description: "Structured collection, normalization, enrichment, and graph correlation turn fragmented observations into an application map.",
   },
   {
-    title: "IDA Workflows",
-    description: "Using static analysis workflows to understand compiled code, control flow, and program structure.",
+    title: "API & JS intelligence",
+    description: "Local artifacts are analyzed for API families, schemas, authentication indicators, objects, routes, and JavaScript findings.",
   },
   {
-    title: "Python Tooling",
-    description: "Building small tools that support analysis, repeatable experiments, and technical investigation.",
+    title: "Evidence correlation",
+    description: "Routes, entities, trust boundaries, diffs, and workflow transitions are connected before an analyst assigns priority.",
   },
   {
-    title: "Crackmes Challenges",
-    description: "Practicing reverse-engineering fundamentals through purpose-built crackmes challenges.",
+    title: "Analyst-controlled AI",
+    description: "Codex is optional, invoked deliberately, and used to form hypotheses from bounded evidence rather than validate findings.",
   },
   {
-    title: "Secure Development",
-    description: "Applying systems research to vulnerability awareness, responsible disclosure, and safer software design.",
+    title: "Review & audit",
+    description: "Machine-readable outputs, casefiles, validation reports, and append-only audit events preserve how conclusions were reached.",
   },
 ];
 
@@ -381,7 +381,8 @@ export default function HendrikFuchsPage() {
             <p>
               Alongside software development, Hendrik maintains an interest in understanding how
               software works internally. The work is practical and exploratory, connecting reverse
-              engineering techniques with better vulnerability awareness and more secure software development.
+              engineering techniques with better vulnerability awareness, security tooling, and more
+              secure software development.
             </p>
           </div>
           <div className="founder-research-note">
@@ -391,6 +392,47 @@ export default function HendrikFuchsPage() {
               authorization has been granted.
             </p>
           </div>
+        </div>
+
+        <article className="founder-research-project">
+          <div className="founder-research-project-copy">
+            <span className="eyebrow">Independent Research Project / Active Prototype</span>
+            <h3>Hunter Extensions &amp; ReconPilot</h3>
+            <p>
+              A local security-research workspace built to reduce noise without removing the operator
+              from the investigation. Hunter explores an evidence handoff model for Burp Suite, while
+              ReconPilot implements a Rust-based pipeline for collection planning, normalization,
+              enrichment, graph correlation, prioritization, and reporting.
+            </p>
+            <p>
+              The architecture keeps external-tool execution and AI reasoning behind separate,
+              explicit controls. Model output is treated as a hypothesis that must cite available
+              evidence and still requires analyst validation.
+            </p>
+          </div>
+          <dl className="founder-research-project-facts">
+            <div>
+              <dt>Languages</dt>
+              <dd>Java, Rust, TypeScript</dd>
+            </div>
+            <div>
+              <dt>Interfaces</dt>
+              <dd>Burp Suite, CLI, Tauri desktop</dd>
+            </div>
+            <div>
+              <dt>Data model</dt>
+              <dd>Structured JSON / JSONL artifacts</dd>
+            </div>
+            <div>
+              <dt>Safety model</dt>
+              <dd>Scope-first, dry-run by default</dd>
+            </div>
+          </dl>
+        </article>
+
+        <div className="founder-research-grid-heading">
+          <span className="eyebrow">What The Project Explores</span>
+          <p>Concrete engineering areas represented in the current research codebase.</p>
         </div>
         <div className="founder-research-grid">
           {systemsResearch.map((item, index) => (
