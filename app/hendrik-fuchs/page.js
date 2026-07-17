@@ -137,7 +137,11 @@ export const metadata = {
   description:
     "Hendrik Fuchs is the founder of TradeOps, a self-taught software engineer and systems researcher from Namibia working across software, AI, data systems, and software internals.",
   alternates: {
-    canonical: "/hendrik-fuchs",
+    canonical: "https://tradeops.org/hendrik-fuchs",
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
   openGraph: {
     title: "Hendrik Fuchs | Founder of TradeOps",

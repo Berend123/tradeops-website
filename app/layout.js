@@ -13,6 +13,7 @@ const monoFont = IBM_Plex_Mono({
 });
 
 export const metadata = {
+  metadataBase: new URL("https://tradeops.org"),
   title: "TradeOps | Morning Edge Market Briefing",
   description:
     "TradeOps turns stock and crypto catalysts into a Morning Edge dashboard and Discord Pro briefing with market weather, best long and short, priority tiers, and risk framing.",
