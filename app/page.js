@@ -637,6 +637,53 @@ export default async function HomePage() {
           </a>
         </div>
       </section>
+
+      <footer className="subpage-panel footer-shell">
+        <div className="footer-brand">
+          <div className="brand-lockup">
+            <Image
+              src="/TradeOpsLogoTransparent.png"
+              alt="TradeOps"
+              width={72}
+              height={72}
+              className="footer-mark"
+            />
+            <div>
+              <strong>TradeOps</strong>
+              <p>Market intelligence with a clear operating hierarchy.</p>
+            </div>
+          </div>
+          <p>
+            Built by Hendrik Fuchs in Namibia for traders who need a sharper filter, not another
+            headline feed.
+          </p>
+        </div>
+
+        <nav className="footer-links" aria-label="TradeOps footer navigation">
+          <div>
+            <h3>Product</h3>
+            <ul>
+              <li><a href="#sample-brief">Sample Brief</a></li>
+              <li><a href="#pricing">Pricing</a></li>
+            </ul>
+          </div>
+          <div>
+            <h3>Company</h3>
+            <ul>
+              <li><a href="/hendrik-fuchs">Founder Profile</a></li>
+              <li><a href="https://github.com/Berend123" target="_blank" rel="noreferrer">GitHub</a></li>
+            </ul>
+          </div>
+          <div>
+            <h3>Access</h3>
+            <ul>
+              <li><a href="/login">Member Login</a></li>
+              <li><a href={discordUrl} target="_blank" rel="noreferrer">Discord</a></li>
+            </ul>
+          </div>
+        </nav>
+        <span className="footer-watermark" aria-hidden="true">TradeOps</span>
+      </footer>
       </main>
     </AttributionPage>
   );

@@ -56,3 +56,9 @@ test("crawler routes exist and sitemap includes the founder profile", () => {
   assert.match(sitemapSource, /["']\/hendrik-fuchs["']/);
   assert.doesNotMatch(sitemapSource, /["']\/(?:api|account|dashboard|login|discord)/);
 });
+
+test("indexed homepage links directly to the founder profile", () => {
+  const homeSource = readFileSync(appPath("page.js"), "utf8");
+
+  assert.match(homeSource, /<a href=["']\/hendrik-fuchs["']>Founder Profile<\/a>/);
+});
