@@ -33,6 +33,23 @@ test("initializeAttributionState preserves first touch and updates last touch", 
   assert.equal(state.anonymousId, "anon_saved");
 });
 
+test("initializeAttributionState persists Lemon Squeezy affiliate codes", () => {
+  const firstVisit = initializeAttributionState({
+    search: "?aff=partner_42&src=affiliate",
+    pathname: "/affiliates",
+    nowIso: "2026-08-17T08:00:00.000Z",
+  });
+  const laterVisit = initializeAttributionState({
+    search: "",
+    pathname: "/pricing",
+    localState: firstVisit,
+    nowIso: "2026-08-17T08:10:00.000Z",
+  });
+
+  assert.equal(firstVisit.affiliateCode, "partner_42");
+  assert.equal(laterVisit.affiliateCode, "partner_42");
+});
+
 
 test("buildTrackedHref preserves attribution query params across navigation", () => {
   const href = buildTrackedHref("/join", {
@@ -83,6 +100,7 @@ test("buildWebsiteEventPayload includes first and last touch metadata", () => {
       anonymousId: "anon_123",
       lastTouchSource: "x",
       lastTouchCampaign: "pricing_campaign",
+      affiliateCode: "partner_42",
     },
     page: "/pricing",
     referrer: "https://tradeops.org/join",
@@ -99,5 +117,6 @@ test("buildWebsiteEventPayload includes first and last touch metadata", () => {
   assert.equal(payload.campaign, "pricing_campaign");
   assert.equal(payload.plan_id, "tradeops_pro");
   assert.equal(payload.plan_name, "TradeOps Pro");
+  assert.equal(payload.affiliate_code, "partner_42");
   assert.deepEqual(payload.metadata, { button_name: "start_checkout" });
 });

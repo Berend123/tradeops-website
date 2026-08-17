@@ -96,11 +96,15 @@ export function AttributionPage({ pageType = "landing", pageViewMetadata = {}, c
     if (!state) {
       throw new Error("Attribution state is not ready.");
     }
+    const affiliateApi = window.LemonSqueezy?.Affiliate;
+    const affiliateTrackingId = affiliateApi?.GetID?.() || affiliateApi?.GetId?.() || "";
     const response = await postJson(checkoutEndpoint, {
       atid: state.currentAtid,
       first_touch_atid: state.firstTouchAtid,
       last_touch_atid: state.lastTouchAtid,
       anonymous_id: state.anonymousId,
+      affiliate_code: state.affiliateCode || "",
+      affiliate_tracking_id: affiliateTrackingId,
       source: state.lastTouchSource || "website",
       campaign: state.lastTouchCampaign || "",
       plan_id: planId,

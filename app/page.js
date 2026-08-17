@@ -671,6 +671,7 @@ export default async function HomePage() {
             <h3>Company</h3>
             <ul>
               <li><a href="/hendrik-fuchs">Founder Profile</a></li>
+              <li><a href="/affiliates">Affiliate Program</a></li>
               <li><a href="https://github.com/Berend123" target="_blank" rel="noreferrer">GitHub</a></li>
             </ul>
           </div>

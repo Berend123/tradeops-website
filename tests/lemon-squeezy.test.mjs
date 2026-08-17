@@ -92,6 +92,7 @@ test("createLemonCheckoutSession builds a live Lemon Squeezy checkout without te
       username: "alpha",
       discord_user_id: "1515448552623702106",
       relationship_id: "u-1",
+      affiliate_tracking_id: "affiliate-tracking-123",
     },
     origin: "https://tradeops.org",
     env: {
@@ -104,7 +105,10 @@ test("createLemonCheckoutSession builds a live Lemon Squeezy checkout without te
   });
 
   assert.equal(session.provider, "lemon_squeezy");
-  assert.equal(session.checkout_url, "https://tradeopshq.lemonsqueezy.com/checkout/custom/checkout_live");
+  assert.equal(
+    session.checkout_url,
+    "https://tradeopshq.lemonsqueezy.com/checkout/custom/checkout_live?aff_ref=affiliate-tracking-123",
+  );
   assert.equal(session.metadata.store_id, "409011");
   assert.equal(session.metadata.variant_id, "1799365");
   assert.equal(session.metadata.discord_user_id, "1515448552623702106");

@@ -1,4 +1,4 @@
-const publicRoutes = ["", "/pricing", "/join", "/hendrik-fuchs"];
+const publicRoutes = ["", "/pricing", "/join", "/affiliates", "/hendrik-fuchs"];
 
 export default function sitemap() {
   const lastModified = new Date();

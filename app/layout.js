@@ -1,4 +1,5 @@
 import { IBM_Plex_Mono, Space_Grotesk } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 
 const displayFont = Space_Grotesk({
@@ -27,7 +28,14 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`${displayFont.variable} ${monoFont.variable}`}>{children}</body>
+      <body className={`${displayFont.variable} ${monoFont.variable}`}>
+        {children}
+        <Script id="lemon-squeezy-affiliate-config" strategy="beforeInteractive">
+          {`window.lemonSqueezyAffiliateConfig = { store: "tradeopshq" };`}
+        </Script>
+        <Script src="https://lmsqueezy.com/affiliate.js" strategy="afterInteractive" />
+        <Script src="https://app.lemonsqueezy.com/js/lemon.js" strategy="afterInteractive" />
+      </body>
     </html>
   );
 }
