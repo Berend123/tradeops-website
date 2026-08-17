@@ -59,10 +59,10 @@ const rules = [
 
 export default function AffiliatesPage() {
   const signupUrl = process.env.NEXT_PUBLIC_AFFILIATE_SIGNUP_URL
-    || "mailto:masingdesign@gmail.com?subject=TradeOps%20Affiliate%20Application";
-  const commissionLabel = process.env.NEXT_PUBLIC_AFFILIATE_COMMISSION_LABEL || "Recurring commission";
+    || "https://tradeopshq.lemonsqueezy.com/affiliates";
+  const commissionLabel = process.env.NEXT_PUBLIC_AFFILIATE_COMMISSION_LABEL || "30% recurring commission";
   const trackingLabel = process.env.NEXT_PUBLIC_AFFILIATE_TRACKING_LABEL
-    || "Tracking window confirmed during application";
+    || "30-day tracking window";
   const usesApplicationLink = signupUrl.startsWith("http");
 
   const organizationSchema = {
