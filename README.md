@@ -56,6 +56,8 @@ Current environment variables:
 
 The Next.js app proxies browser requests to that backend so `atid`, first-touch, last-touch, checkout handoff, and Discord join attribution all stay first-party.
 
+Attribution events use `DATABASE_URL` directly when the conversion API is not configured or returns a network/server error. Events are persisted in the `attribution_events` Neon table with unique `event_id` values, full validated payloads, and referral fields. The existing schema initializer creates the table. Success is returned only after persistence; repeated event IDs are acknowledged with `duplicate: true`. This fallback stores events locally and does not forward or replay them to the Python backend. Conversion API 4xx responses remain authoritative. Failed database writes still return an error.
+
 If the conversion API is unavailable, the checkout session route can fall back to creating a Lemon Squeezy hosted checkout directly from the website runtime. The webhook route can also verify and acknowledge Lemon Squeezy webhooks directly so live payments are not blocked by a missing backend host.
 
 Discord identity can now be linked through:
