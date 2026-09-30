@@ -44,7 +44,7 @@ const fitCards = [
 const applicationSteps = [
   ["Apply", "Tell us where you publish, who you serve, and how TradeOps fits your audience."],
   ["Review", "TradeOps reviews audience fit and promotion methods before approving access."],
-  ["Share", "Approved partners receive a unique Lemon Squeezy referral link and program resources."],
+  ["Share", "Approved partners receive free Discord access, a unique Lemon Squeezy referral link, and program resources."],
   ["Earn", "Lemon Squeezy records eligible referrals and manages affiliate reporting and payouts."],
 ];
 
@@ -117,6 +117,7 @@ export default function AffiliatesPage() {
               <div><dt>Reward</dt><dd>{commissionLabel}</dd></div>
               <div><dt>Tracking</dt><dd>{trackingLabel}</dd></div>
               <div><dt>Platform</dt><dd>Lemon Squeezy</dd></div>
+              <div><dt>Partner access</dt><dd>Free Discord access for approved affiliates</dd></div>
               <div><dt>Review</dt><dd>Application required</dd></div>
             </dl>
             <div className="affiliate-status"><span /> Program accepting applications</div>
